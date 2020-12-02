@@ -3,7 +3,7 @@ import sbt._
 object Dependencies {
 
   object Versions {
-    lazy val gdx = "1.9.11"
+    lazy val gdx = "1.9.12"
   }
 
   object Libraries {
