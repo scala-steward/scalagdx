@@ -73,8 +73,12 @@ lazy val sharedPublishSettings = Seq(
 
 lazy val credentialSettings = Seq(
   credentials ++= (for {
-    username <- Option("qwbarch")//Option(System.getenv().get("SONATYPE_USERNAME"))
-    password <- Option("%8ueJmLvV$GCbG4^qLJ#FiA%S#SskJmA9NmkWTX4")//Option(System.getenv().get("SONATYPE_PASSWORD"))
+    username <- Option(
+      "qwbarch"
+    ) //Option(System.getenv().get("SONATYPE_USERNAME"))
+    password <- Option(
+      "%8ueJmLvV$GCbG4^qLJ#FiA%S#SskJmA9NmkWTX4"
+    ) //Option(System.getenv().get("SONATYPE_PASSWORD"))
   } yield Credentials(
     "Sonatype Nexus Repository Manager",
     "oss.sonatype.org",
