@@ -10,7 +10,7 @@ object Version {
   val newType = "0.4.4"
 
   // Test
-  val scalaCheck = "1.15.1"
+  val scalaCheck = "1.15.2"
   val scalaTest = "3.2.3"
   val scalaTestPlus = "3.2.2.0"
 }
