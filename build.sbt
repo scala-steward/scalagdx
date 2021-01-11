@@ -3,7 +3,9 @@ import ReleaseTransformations._
 
 val TestScope = "it,test"
 
-lazy val commonSettings = Seq(
+// Requires type signature, otherwise it becomes Seq[Object]
+lazy val commonSettings: Seq[SettingsDefinition] = Seq(
+  Defaults.itSettings,
   organization := "com.github.scalagdx",
   scalaVersion := "2.13.4",
   crossScalaVersions := Seq("2.11.12", "2.12.12", "2.13.4"),
@@ -15,6 +17,7 @@ lazy val commonSettings = Seq(
     scalaCheck % TestScope,
     scalaTest % TestScope,
     scalaTestPlus % TestScope,
+    gdxBackendHeadless % TestScope,
   ),
 )
 
@@ -94,7 +97,7 @@ lazy val sharedReleaseProcess = Seq(
 
 lazy val root = project
   .in(file("."))
-  .settings(noPublishSettings, commonSettings, releaseSettings)
+  .settings(commonSettings ++ noPublishSettings ++ releaseSettings: _*)
   .settings(
     unmanagedSourceDirectories in Compile := Nil,
     unmanagedSourceDirectories in Test := Nil,
@@ -104,7 +107,7 @@ lazy val root = project
 lazy val app = project
   .in(file("modules/app"))
   .configs(IntegrationTest)
-  .settings(commonSettings, publishSettings)
+  .settings(commonSettings ++ publishSettings: _*)
   .settings(
     name := "gdx-app",
   )
