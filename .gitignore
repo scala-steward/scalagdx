@@ -1,2 +1,11 @@
 *.class
 *.log
+
+target
+.bloop
+.metals
+.bsp
+.vscode
+.idea
+
+metals.sbt
