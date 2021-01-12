@@ -14,11 +14,14 @@ lazy val commonSettings: Seq[SettingsDefinition] = Seq(
     gdxCore,
     catsCore,
     catsEffect,
+    newType,
     scalaCheck % TestScope,
     scalaTest % TestScope,
     scalaTestPlus % TestScope,
     gdxBackendHeadless % TestScope,
   ),
+  scalacOptions += "-Ymacro-annotations",
+  scalacOptions --= Seq("-Wunused:imports", "Xlint:adapted-args"),
 )
 
 lazy val noPublishSettings = {
@@ -102,7 +105,7 @@ lazy val root = project
     unmanagedSourceDirectories in Compile := Nil,
     unmanagedSourceDirectories in Test := Nil,
   )
-  .aggregate(app)
+  .aggregate(app, log)
 
 lazy val app = project
   .in(file("modules/app"))
@@ -110,4 +113,12 @@ lazy val app = project
   .settings(commonSettings ++ publishSettings: _*)
   .settings(
     name := "gdx-app",
+  )
+
+lazy val log = project
+  .in(file("modules/log"))
+  .configs(IntegrationTest)
+  .settings(commonSettings ++ publishSettings: _*)
+  .settings(
+    name := "gdx-log",
   )
