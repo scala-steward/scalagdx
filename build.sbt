@@ -18,7 +18,9 @@ lazy val commonSettings: Seq[SettingsDefinition] = Seq(
     scalaCheck % TestScope,
     scalaTest % TestScope,
     scalaTestPlus % TestScope,
+    scalaMock % TestScope,
     gdxBackendHeadless % TestScope,
+    gdxPlatform % TestScope classifier Classifier.nativesDesktop
   ),
   scalacOptions += "-Ymacro-annotations",
   scalacOptions --= Seq("-Wunused:imports", "Xlint:adapted-args"),
