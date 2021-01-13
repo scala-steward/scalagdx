@@ -12,13 +12,13 @@ import scalagdx.app.utils.CatsUnsafeAsync
 
 final class ExampleApplicationListener[F[_]: Sync: ApplicativeError[*[_], Throwable]] extends ApplicationListener[F] {
 
-  override def create: F[Unit] = Sync[F].delay(())
+  override def create: F[Unit] = Sync[F].unit
 
-  override def render: F[Unit] = Sync[F].delay(())
+  override def render: F[Unit] = Sync[F].unit
 
   override def resize(width: Int, height: Int): F[Unit] = Sync[F].delay(())
 
-  override def resume: F[Unit] = Sync[F].delay(())
+  override def resume: F[Unit] = Sync[F].unit
 
   override def pause: F[Unit] =
     ApplicativeError[F, Throwable].handleError(
