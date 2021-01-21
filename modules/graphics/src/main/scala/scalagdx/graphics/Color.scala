@@ -32,8 +32,7 @@ final case class Color(
    * Applies the function f to this color's RGBA values and the given RGBA values.
    *
    * @param color The color to use with the function f
-   * @param f The first float represents this color's RGBA values.
-   *              The second float represents the parameter color's RGBA values.
+   * @param f The first float represents this color's RGBA values. The second float represents the parameter color's RGBA values.
    * @return [[Left]] if any RGBA value is out of the range of [0,1], otherwise returns a [[Right]] with the new color
    */
   private def operator(r: Float, g: Float, b: Float, a: Float)(f: (Float, Float) => Float): Either[String, Color] =
@@ -48,8 +47,7 @@ final case class Color(
    * Applies the function f to this color's RGBA values and the given value.
    *
    * @param color The color to use with the function f
-   * @param f The first float represents this color's RGBA values.
-   *              The second float represents the parameter color's RGBA values.
+   * @param f The first float represents this color's RGBA values. The second float represents the parameter color's RGBA values.
    * @return [[Left]] if any RGBA value is out of the range of [0,1], otherwise returns a [[Right]] with the new color
    */
   private def operator(value: Float)(f: (Float, Float) => Float): Either[String, Color] =
@@ -59,8 +57,7 @@ final case class Color(
    * Applies the function f to this color's RGBA values and the given color's values.
    *
    * @param color The color to use with the function f
-   * @param f The first float represents this color's RGBA values.
-   *              The second float represents the parameter color's RGBA values.
+   * @param f The first float represents this color's RGBA values. The second float represents the parameter color's RGBA values.
    * @return [[Left]] if any RGBA value is out of the range of [0,1], otherwise returns a [[Right]] with the new color
    */
   private def operator(color: Color)(f: (Float, Float) => Float): Either[String, Color] =
@@ -368,9 +365,10 @@ object Color {
    */
   def apply(): Color = Color(0f, 0f, 0f, 0f)
 
-  def apply(rgba8888: Int): Color = new JColor(rgba8888).asScala
-
-  def apply(hex: String Refined RRGGBBAA): Color = JColor.valueOf(hex.value).asScala
+  /**
+   * @see [[fromRgba8888]]
+   */
+  def apply(rgba8888: Int): Color = Color.fromRgba8888(rgba8888)
 
   /**
    * Packs the color components into a 32-bit integer with the format ABGR and then converts it to a float.
