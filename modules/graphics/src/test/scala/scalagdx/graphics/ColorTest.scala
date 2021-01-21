@@ -3,7 +3,6 @@ package scalagdx.graphics
 import com.badlogic.gdx.graphics.{Color => JColor}
 import eu.timepit.refined.api.Refined
 import eu.timepit.refined.auto._
-import org.scalactic.TolerantNumerics
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 import scalagdx.graphics.ext.ColorOps
@@ -98,7 +97,7 @@ class ColorTest extends AnyFlatSpec with Matchers {
 
   it should "linearly interpolate" in {
     Color(.2f, .2f, .2f, .2f).lerp(.3f, .4f) shouldBe Right(
-      new JColor(.2f, .2f, .2f, .2f).lerp(.3f, .3f, .3f, .3f, .4f).asScala,
+      new JColor(.2f, .2f, .2f, .2f).lerp(.3f, .3f, .3f, .3f, .4f).asScala
     )
     Color(0f, 0f, 0f, 0f).lerp(Color(1f, 1f, 1f, 1f), 2f) shouldBe a[Left[_, Color]]
     Color(.2f, .2f, .2f, .2f)
@@ -169,6 +168,7 @@ class ColorTest extends AnyFlatSpec with Matchers {
 
     Color.fromHex("#FFFFFFFF") shouldBe JColor.valueOf("#FFFFFFFF").asScala
     Color.fromHex("#000000") shouldBe JColor.valueOf("#000000").asScala
-    Color(1f, 1f, 1f, 1f).toHex shouldBe new JColor(1f, 1f, 1f, 1f).toString
+    Color(1f, 1f, 1f, 1f).toHex shouldBe "#" + new JColor(1f, 1f, 1f, 1f).toString
+    Color.fromHex(Refined.unsafeApply(Color.White.toHex)) shouldBe Color.White
   }
 }

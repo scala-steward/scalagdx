@@ -1,17 +1,16 @@
 package scalagdx.app
 
-import com.badlogic.gdx.Application
 import com.badlogic.gdx.{ApplicationListener => JApplicationListener}
 import scalagdx.app.utils.Disposable
 import scalagdx.app.utils.UnsafeAsync
 
 /**
- * Used to handle the [[Application]] lifecycle
+ * Used to handle the [[com.badlogic.gdx.Application]] lifecycle
  */
 trait ApplicationListener[F[_]] extends Disposable[F] { self =>
 
   /**
-   * Called when the [[Application]] is created.
+   * Called when the [[com.badlogic.gdx.Application]] is created.
    * All methods in the OpenGL context is available when this is called.
    */
   def create: F[Unit]
@@ -22,7 +21,7 @@ trait ApplicationListener[F[_]] extends Disposable[F] { self =>
   def render: F[Unit]
 
   /**
-   * Called when the [[Application]] is resized
+   * Called when the [[com.badlogic.gdx.Application]] is resized
    * @param width The new width of the application
    * @param height The new height of the application
    * @return
@@ -30,17 +29,17 @@ trait ApplicationListener[F[_]] extends Disposable[F] { self =>
   def resize(width: Int, height: Int): F[Unit]
 
   /**
-   * Called when the [[Application]] is resumed
+   * Called when the [[com.badlogic.gdx.Application]] is resumed
    */
   def resume: F[Unit]
 
   /**
-   * Called when the [[Application]] is paused
+   * Called when the [[com.badlogic.gdx.Application]] is paused
    */
   def pause: F[Unit]
 
   /**
-   * Automatically called when the [[Application]] stops
+   * Automatically called when the [[com.badlogic.gdx.Application]] stops
    */
   def dispose: F[Unit]
 

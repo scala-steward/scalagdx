@@ -6,13 +6,13 @@ import java.io.PrintStream
 import cats.effect.IO
 import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.backends.headless.HeadlessApplicationLogger
+import org.scalamock.scalatest.MockFactory
+import org.scalatest.BeforeAndAfterAll
+import org.scalatest.BeforeAndAfterEach
+import org.scalatest.OneInstancePerTest
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
-import org.scalatest.BeforeAndAfterAll
-import org.scalamock.scalatest.MockFactory
-import org.scalatest.OneInstancePerTest
-import org.scalatest.BeforeAndAfterEach
-import com.badlogic.gdx.backends.headless.HeadlessApplicationLogger
 
 class LoggerTest
     extends AnyFlatSpec

@@ -1,5 +1,8 @@
 package scalagdx.graphics
 
+import scala.annotation.tailrec
+
+import cats.implicits._
 import com.badlogic.gdx.graphics.{Color => JColor}
 import eu.timepit.refined.W
 import eu.timepit.refined.api.Refined
@@ -7,11 +10,10 @@ import eu.timepit.refined.auto._
 import eu.timepit.refined.boolean.And
 import eu.timepit.refined.numeric.GreaterEqual
 import eu.timepit.refined.numeric.LessEqual
-import scalagdx.graphics.Color.RGBA
-import scalagdx.graphics.ext.ColorOps
 import eu.timepit.refined.refineV
 import eu.timepit.refined.string.MatchesRegex
-import scala.annotation.tailrec
+import scalagdx.graphics.Color.RGBA
+import scalagdx.graphics.ext.ColorOps
 
 /**
  * Color represented by its RGBA values in the range [0, 1]
@@ -20,7 +22,7 @@ final case class Color(
     r: Float Refined RGBA,
     g: Float Refined RGBA,
     b: Float Refined RGBA,
-    a: Float Refined RGBA,
+    a: Float Refined RGBA
 ) {
 
   /**
@@ -82,7 +84,7 @@ final case class Color(
     r = clamp(f(this.r, r)),
     g = clamp(f(this.g, g)),
     b = clamp(f(this.b, b)),
-    a = clamp(f(this.a, a)),
+    a = clamp(f(this.a, a))
   )
 
   /**
@@ -318,7 +320,7 @@ final case class Color(
     r = Refined.unsafeApply((r.value * 255f).toInt),
     g = Refined.unsafeApply((g.value * 255f).toInt),
     b = Refined.unsafeApply((b.value * 255f).toInt),
-    a = Refined.unsafeApply((a.value * 255f).toInt),
+    a = Refined.unsafeApply((a.value * 255f).toInt)
   )
 
   def rgb565: Int = JColor.rgb565(asJava)
@@ -339,7 +341,8 @@ final case class Color(
       if (value.length < 8) hex("0" + value)
       else value
     }
-    hex((((255 * r).toInt << 24) | ((255 * g).toInt << 16) | ((255 * b).toInt << 8) | ((255 * a).toInt)).toHexString)
+    "#" +
+      hex((((255 * r).toInt << 24) | ((255 * g).toInt << 16) | ((255 * b).toInt << 8) | ((255 * a).toInt)).toHexString)
   }
 }
 
@@ -358,7 +361,7 @@ object Color {
   /**
    * Predicate for #RRGGBBAA hex codes
    */
-  type RRGGBBAA = MatchesRegex["^#([a-fA-F0-9]{8}|[a-fA-F0-9]{6})$"]
+  type RRGGBBAA = MatchesRegex[W.`"^#([a-fA-F0-9]{6}|[a-fA-F0-9]{8})$"`.T]
 
   /**
    * Constructs a new [[Color]] with 0 as its default RGBA values.
@@ -377,7 +380,7 @@ object Color {
       r: Float Refined RGBA,
       g: Float Refined RGBA,
       b: Float Refined RGBA,
-      a: Float Refined RGBA,
+      a: Float Refined RGBA
   ): Float = JColor.toFloatBits(r, g, b, a)
 
   /**
@@ -388,7 +391,7 @@ object Color {
       r: Int Refined ABGR,
       g: Int Refined ABGR,
       b: Int Refined ABGR,
-      a: Int Refined ABGR,
+      a: Int Refined ABGR
   ): Float = JColor.toFloatBits(r, g, b, a)
 
   /**
@@ -398,7 +401,7 @@ object Color {
       r: Int Refined ABGR,
       g: Int Refined ABGR,
       b: Int Refined ABGR,
-      a: Int Refined ABGR,
+      a: Int Refined ABGR
   ): Int = JColor.toIntBits(r, g, b, a)
 
   def alpha(value: Float): Int = JColor.alpha(value)

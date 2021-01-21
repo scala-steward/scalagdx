@@ -1,6 +1,5 @@
 package scalagdx.app
 
-import com.badlogic.gdx.Application
 import cats.effect.Sync
 
 class ApplicationAdapter[F[_]: Sync] extends ApplicationListener[F] {

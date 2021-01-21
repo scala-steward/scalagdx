@@ -65,7 +65,7 @@ object Logger {
   def getLogger[F[_]: Sync](
       infoPrefix: InfoPrefix = InfoPrefix("[INFO]"),
       debugPrefix: DebugPrefix = DebugPrefix("[DEBUG]"),
-      errorPrefix: ErrorPrefix = ErrorPrefix("[ERROR]"),
+      errorPrefix: ErrorPrefix = ErrorPrefix("[ERROR]")
   ): Logger[F] = new Logger[F] {
 
     override def debug(message: => String)(implicit tag: LoggerTag): F[Unit] =

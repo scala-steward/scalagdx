@@ -1,7 +1,6 @@
 package scalagdx.app.utils
 
 import cats.effect.IO
-import com.badlogic.gdx.ApplicationListener
 
 /**
  * Type class for running side effects on an IO monad.
@@ -26,7 +25,7 @@ object UnsafeAsync {
 }
 
 /**
- * Allows [[IO]] to run from Libgdx's [[ApplicationListener]].
+ * Allows [[IO]] to run from Libgdx's [[com.badlogic.gdx.ApplicationListener]].
  * Should only be provided once at the top-level.
  */
 trait CatsUnsafeAsync {

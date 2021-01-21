@@ -14,7 +14,7 @@ object ext {
       Refined.unsafeApply(color.r),
       Refined.unsafeApply(color.g),
       Refined.unsafeApply(color.b),
-      Refined.unsafeApply(color.a),
+      Refined.unsafeApply(color.a)
     )
   }
 }
