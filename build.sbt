@@ -107,20 +107,26 @@ lazy val root = project
     unmanagedSourceDirectories in Compile := Nil,
     unmanagedSourceDirectories in Test := Nil,
   )
-  .aggregate(app, log)
+  .aggregate(app, log, graphics)
 
 lazy val app = project
   .in(file("modules/app"))
   .configs(IntegrationTest)
   .settings(commonSettings ++ publishSettings: _*)
-  .settings(
-    name := "gdx-app",
-  )
+  .settings(name := "gdx-app")
 
 lazy val log = project
   .in(file("modules/log"))
   .configs(IntegrationTest)
   .settings(commonSettings ++ publishSettings: _*)
+  .settings(name := "gdx-log")
+
+lazy val graphics = project
+  .in(file("modules/graphics"))
+  .configs(IntegrationTest)
+  .dependsOn(app)
+  .settings(commonSettings ++ publishSettings: _*)
   .settings(
-    name := "gdx-log",
+    name := "gdx-graphics",
+    libraryDependencies += refined
   )

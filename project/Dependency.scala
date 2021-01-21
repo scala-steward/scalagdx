@@ -16,6 +16,7 @@ object Dependency {
   val gdxPlatform = gdx("gdx-platform")
 
   val newType = "io.estatico" %% "newtype" % Version.newType
+  val refined = "eu.timepit" %% "refined" % Version.refined
 
   val scalaCheck = "org.scalacheck" %% "scalacheck" % Version.scalaCheck
   val scalaTest = "org.scalatest" %% "scalatest" % Version.scalaTest

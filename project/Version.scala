@@ -8,6 +8,7 @@ object Version {
 
   // Utility
   val newType = "0.4.4"
+  val refined = "0.9.12"
 
   // Test
   val scalaCheck = "1.15.2"
