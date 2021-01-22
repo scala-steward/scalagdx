@@ -14,7 +14,7 @@ lazy val commonSettings: Seq[SettingsDefinition] = Seq(
     compilerPlugin("org.scalamacros" % "paradise" % "2.1.0" cross CrossVersion.full),
     gdxCore,
     catsCore,
-    catsEffect, 
+    catsEffect,
     newType,
     scalaCheck % TestScope,
     scalaTest % TestScope,
@@ -31,7 +31,7 @@ lazy val noPublishSettings = {
     publish := { () },
     publishLocal := { () },
     publishArtifact := false,
-    skip in publish := true,
+    skip in publish := true
   )
 }
 
@@ -39,12 +39,12 @@ lazy val releaseSettings = Seq(
   scmInfo := Some(
     ScmInfo(
       url("https://github.com/scalagdx/scalagdx"),
-      "scm:git:git@github.com:scalagdx/scalagdx.git",
-    ),
+      "scm:git:git@github.com:scalagdx/scalagdx.git"
+    )
   ),
   homepage := Some(url("https://github.com/scalagdx/scalagdx")),
   licenses := Seq(
-    "GPLv3" -> url("https://opensource.org/licenses/GPL-3.0"),
+    "GPLv3" -> url("https://opensource.org/licenses/GPL-3.0")
   ),
   pomIncludeRepository := { _ =>
     false
@@ -54,11 +54,11 @@ lazy val releaseSettings = Seq(
       id = "qwbarch",
       name = "Edward Yang",
       email = "edwardyang0410@gmail.com",
-      url = url("https://github.com/qwbarch"),
-    ),
+      url = url("https://github.com/qwbarch")
+    )
   ),
   publishMavenStyle := true,
-  publishArtifact in Test := false,
+  publishArtifact in Test := false
 )
 
 lazy val publishSettings =
@@ -67,8 +67,8 @@ lazy val publishSettings =
 lazy val sharedPublishSettings = Seq(
   publishTo := Some(
     if (isSnapshot.value) Opts.resolver.sonatypeSnapshots
-    else Opts.resolver.sonatypeStaging,
-  ),
+    else Opts.resolver.sonatypeStaging
+  )
 )
 
 lazy val credentialSettings = Seq(
@@ -79,8 +79,8 @@ lazy val credentialSettings = Seq(
     "Sonatype Nexus Repository Manager",
     "oss.sonatype.org",
     username,
-    password,
-  )).toSeq,
+    password
+  )).toSeq
 )
 
 lazy val sharedReleaseProcess = Seq(
@@ -96,8 +96,8 @@ lazy val sharedReleaseProcess = Seq(
     setNextVersion,
     commitNextVersion,
     releaseStepCommand("sonatypeRelease"),
-    pushChanges,
-  ),
+    pushChanges
+  )
 )
 
 lazy val root = project
@@ -105,7 +105,7 @@ lazy val root = project
   .settings(commonSettings ++ noPublishSettings ++ releaseSettings: _*)
   .settings(
     unmanagedSourceDirectories in Compile := Nil,
-    unmanagedSourceDirectories in Test := Nil,
+    unmanagedSourceDirectories in Test := Nil
   )
   .aggregate(app, log, graphics)
 

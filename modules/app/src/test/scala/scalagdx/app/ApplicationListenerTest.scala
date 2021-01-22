@@ -31,11 +31,11 @@ class ApplicationListenerTest extends AnyFlatSpec with Matchers with CatsUnsafeA
   val listener: JApplicationListener = new ExampleApplicationListener[IO].asJava
 
   "example application listener" should "return unit on methods except dispose" in {
-    listener.create() shouldBe Unit
-    listener.render() shouldBe Unit
-    listener.resize(0, 0) shouldBe Unit
-    listener.resume() shouldBe Unit
-    listener.pause() shouldBe Unit
+    listener.create() shouldBe (())
+    listener.render() shouldBe (())
+    listener.resize(0, 0) shouldBe (())
+    listener.resume() shouldBe (())
+    listener.pause() shouldBe (())
   }
 
   it should "throw exception on dispose" in {

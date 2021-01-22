@@ -9,10 +9,10 @@ class ApplicationAdapterTest extends AnyFlatSpec with Matchers with CatsUnsafeAs
 
   it should "return unit on all methods" in {
     val listener = new ApplicationAdapter[IO].asJava
-    listener.create() shouldBe Unit
-    listener.resize(0, 0) shouldBe Unit
-    listener.resume() shouldBe Unit
-    listener.pause() shouldBe Unit
-    listener.dispose() shouldBe Unit
+    listener.create() shouldBe (())
+    listener.resize(0, 0) shouldBe (())
+    listener.resume() shouldBe (())
+    listener.pause() shouldBe (())
+    listener.dispose() shouldBe (())
   }
 }
