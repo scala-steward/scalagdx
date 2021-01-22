@@ -44,7 +44,7 @@ lazy val releaseSettings = Seq(
   ),
   homepage := Some(url("https://github.com/scalagdx/scalagdx")),
   licenses := Seq(
-    "GPLv3" -> url("https://opensource.org/licenses/GPL-3.0")
+    "GPLv3" -> url("https://opensource.org/licenses/MIT")
   ),
   pomIncludeRepository := { _ =>
     false
@@ -107,7 +107,7 @@ lazy val root = project
     unmanagedSourceDirectories in Compile := Nil,
     unmanagedSourceDirectories in Test := Nil
   )
-  .aggregate(app, log, graphics)
+  .aggregate(app, log, graphics, math)
 
 lazy val app = project
   .in(file("modules/app"))
@@ -123,6 +123,16 @@ lazy val log = project
 
 lazy val graphics = project
   .in(file("modules/graphics"))
+  .configs(IntegrationTest)
+  .dependsOn(app, math)
+  .settings(commonSettings ++ publishSettings: _*)
+  .settings(
+    name := "gdx-graphics",
+    libraryDependencies += refined
+  )
+
+lazy val math = project
+  .in(file("modules/math"))
   .configs(IntegrationTest)
   .dependsOn(app)
   .settings(commonSettings ++ publishSettings: _*)

@@ -28,7 +28,7 @@ final case class Color(
   /**
    * Converts this into the java equivalent.
    */
-  def asJava: JColor = new JColor(r, g, b, a)
+  lazy val asJava: JColor = new JColor(r, g, b, a)
 
   /**
    * Applies the function f to this color's RGBA values and the given RGBA values.
@@ -349,7 +349,7 @@ final case class Color(
 object Color {
 
   /**
-   * Refined predicate which clamps a numbenr to the range [0f, 1f]
+   * Refined predicate which clamps a number to the range [0f, 1f]
    */
   type RGBA = GreaterEqual[W.`0f`.T] And LessEqual[W.`1f`.T]
 
