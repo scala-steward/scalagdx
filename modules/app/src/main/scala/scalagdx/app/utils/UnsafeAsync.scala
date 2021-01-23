@@ -13,7 +13,7 @@ trait UnsafeAsync[F[_]] {
    */
   def unsafeRunAsync(ev: F[Unit]): Unit
 
-  protected final def handleError(cb: Either[Throwable, Any]): Unit = cb match {
+  protected final def handleError(cb: Either[Throwable, Unit]): Unit = cb match {
     case Left(exception) => throw exception
     case _ => ()
   }

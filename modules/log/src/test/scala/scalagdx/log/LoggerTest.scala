@@ -24,7 +24,7 @@ class LoggerTest
 
   import LoggerTest.{output, stdout, exception}
 
-  val className = classOf[LoggerTest].getName
+  private val className = classOf[LoggerTest].getName
 
   System.setOut(new PrintStream(output))
 

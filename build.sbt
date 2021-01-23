@@ -22,6 +22,16 @@ lazy val commonSettings: Seq[SettingsDefinition] = Seq(
     scalaMock % TestScope,
     gdxBackendHeadless % TestScope,
     gdxPlatform % TestScope classifier Classifier.nativesDesktop
+  ),
+  wartremoverErrors ++= Warts.allBut(
+    Wart.ImplicitParameter,
+    Wart.ImplicitConversion,
+    Wart.Overloading,
+    Wart.DefaultArguments,
+    Wart.NonUnitStatements,
+    Wart.Equals,
+    Wart.Any,
+    Wart.Nothing
   )
 )
 
@@ -106,7 +116,7 @@ lazy val root = project
   .settings(
     unmanagedSourceDirectories in Compile := Nil,
     unmanagedSourceDirectories in Test := Nil,
-    unmanagedSourceDirectories in IntegrationTest := Nil,
+    unmanagedSourceDirectories in IntegrationTest := Nil
   )
   .aggregate(app, log, graphics, math)
 
@@ -114,7 +124,10 @@ lazy val app = project
   .in(file("modules/app"))
   .configs(IntegrationTest)
   .settings(commonSettings ++ publishSettings: _*)
-  .settings(name := "gdx-app")
+  .settings(
+    name := "gdx-app",
+    wartremoverErrors -= Wart.Throw
+  )
 
 lazy val log = project
   .in(file("modules/log"))

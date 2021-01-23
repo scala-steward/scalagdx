@@ -59,17 +59,19 @@ final case class Vector2(x: Float, y: Float) extends Vector[Vector2] {
   /**
    * @inheritdoc
    */
-  override def clamp(min: Float, max: Float): Vector2 = {
-    if (length2 == 0f)
-      return this
-    val max2 = max * max
-    if (length2 > max2)
-      return multiply(sqrt((max2 / length2).toDouble).toFloat)
-    val min2 = min * min
-    if (length2 < min2)
-      return multiply(sqrt((min2 / length2).toDouble).toFloat)
-    this
-  }
+  override def clamp(min: Float, max: Float): Vector2 =
+    if (length2 == 0f) this
+    else {
+      val max2 = max * max
+      if (length2 > max2)
+        multiply(sqrt((max2 / length2).toDouble).toFloat)
+      else {
+        val min2 = min * min
+        if (length2 < min2)
+          multiply(sqrt((min2 / length2).toDouble).toFloat)
+        else this
+      }
+    }
 
   /**
    * Subtracts this vector by the given (x, y) values.

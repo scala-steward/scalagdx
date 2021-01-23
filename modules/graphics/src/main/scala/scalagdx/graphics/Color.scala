@@ -299,14 +299,13 @@ final case class Color(
   /**
    * Multiplies the RGB values by the alpha value.
    */
-  def premultiplyAlpha: Color = (for {
-    r <- refineV[RGBA](r * a)
-    g <- refineV[RGBA](g * a)
-    b <- refineV[RGBA](b * a)
-  } yield Color(r, g, b, a)) match {
-    case Right(value) => value
-    case Left(_) => throw new UnknownError("This should never be thrown. Please contact the library authors to fix.")
-  }
+  def premultiplyAlpha: Color = Color(
+    // Using unsafeApply because a refineV check is unnecessary here
+    r = Refined.unsafeApply(r * a),
+    g = Refined.unsafeApply(g * a),
+    b = Refined.unsafeApply(b * a),
+    a = a
+  )
 
   /**
    * Packs the color components into a 32-bit integer with the format ABGR and then converts it to a float.
