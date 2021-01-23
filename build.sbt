@@ -22,8 +22,7 @@ lazy val commonSettings: Seq[SettingsDefinition] = Seq(
     scalaMock % TestScope,
     gdxBackendHeadless % TestScope,
     gdxPlatform % TestScope classifier Classifier.nativesDesktop
-  ),
-  scalacOptions += "-target:jvm-1.7"
+  )
 )
 
 lazy val noPublishSettings = {
@@ -102,10 +101,12 @@ lazy val sharedReleaseProcess = Seq(
 
 lazy val root = project
   .in(file("."))
+  .configs(IntegrationTest)
   .settings(commonSettings ++ noPublishSettings ++ releaseSettings: _*)
   .settings(
     unmanagedSourceDirectories in Compile := Nil,
-    unmanagedSourceDirectories in Test := Nil
+    unmanagedSourceDirectories in Test := Nil,
+    unmanagedSourceDirectories in IntegrationTest := Nil,
   )
   .aggregate(app, log, graphics, math)
 

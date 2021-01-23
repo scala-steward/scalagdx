@@ -63,7 +63,7 @@ trait Vector[T <: Vector[T]] {
   def -(vector: T): T
 
   /**
-   * Adds this vector by the given vector.
+   * Adds this vector with the given vector.
    */
   def add(vector: T): T
 
@@ -73,19 +73,29 @@ trait Vector[T <: Vector[T]] {
   def +(vector: T): T
 
   /**
+   * Multiplies this vector with the given vector.
+   */
+  def multiply(vector: T): T
+
+  /**
+   * @see [[multiply]]
+   */
+  def *(vector: T): T
+
+  /**
+   * Divides this vector by the given vector.
+   */
+  def divide(vector: T): T
+
+  /**
+   * @see [[divide]]
+   */
+  def /(vector: T): T
+
+  /**
    * Normalizes this vector. Does nothing if this vector is zero.
    */
   def normalize: T
-
-  /**
-   * Scales this vector by a scalar
-   */
-  def scale(scalar: Float): T
-
-  /**
-   * Scales this vector by the given vector
-   */
-  def scale(vector: T): T
 
   /**
    * Distance between this vector and the given vector
@@ -93,7 +103,8 @@ trait Vector[T <: Vector[T]] {
   def distance(vector: T): Float
 
   /**
-   * Distance between this vector and the given vector
+   * Distance between this vector and the given vector.
+   * Slightly faster performance compared to [[distance]]
    */
   def distance2(vector: T): Float
 
@@ -160,7 +171,7 @@ trait Vector[T <: Vector[T]] {
   /**
    * Check if this vector is opposite collinear with the given vector
    */
-  def isCollinearOpposite(vector: T)
+  def isCollinearOpposite(vector: T): Boolean
 
   /**
    * Check if this vector is opposite collinear with the given vector
@@ -201,6 +212,11 @@ trait Vector[T <: Vector[T]] {
    * Scale the given vector by the given scalar vector, then add it to this.
    */
   def scaleAdd(vector: T, scalar: T): T
+
+  /**
+   * The dot product between this and the given vector
+   */
+  def dot(vector: T): Float
 }
 
 object Vector {
