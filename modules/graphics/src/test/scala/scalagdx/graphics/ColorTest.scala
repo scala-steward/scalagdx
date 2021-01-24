@@ -74,6 +74,8 @@ class ColorTest extends AnyFlatSpec with Matchers {
     Color(.2f, .2f, .2f, .2f).add(Color(.2f, .2f, .2f, .2f)) shouldBe a[Right[_, Color]]
     Color(.1f, .2f, .3f, .4f).add(.2f) shouldBe Right(Color(.3f, .4f, .5f, .6f))
     Color(.1f, .2f, .3f, .4f).addClamped(2f) shouldBe Color(1f, 1f, 1f, 1f)
+    Color(1f, 1f, 1f, 1f).add(1f, 2f, 3f, 4f) shouldBe a[Left[_, Color]]
+    Color(1f, 1f, 1f, 1f).addClamped(1f, 2f, 3f, 4f) shouldBe Color(1f, 1f, 1f, 1f)
   }
 
   it should "subtract" in {
@@ -84,6 +86,8 @@ class ColorTest extends AnyFlatSpec with Matchers {
     Color(.2f, .2f, .2f, .2f).subtract(Color(.2f, .2f, .2f, .2f)) shouldBe a[Right[_, Color]]
     Color(1f, .9f, .8f, .7f).subtract(.2f) shouldBe Right(Color(.8f, .7f, .6f, .5f))
     Color().subtractClamped(2f) shouldBe Color()
+    Color(1f, 1f, 1f, 1f).subtract(1f, 2f, 3f, 4f) shouldBe a[Left[_, Color]]
+    Color(1f, 1f, 1f, 1f).subtractClamped(1f, 2f, 3f, 4f) shouldBe Color(0f, 0f, 0f, 0f)
   }
 
   it should "multiply" in {
@@ -93,6 +97,8 @@ class ColorTest extends AnyFlatSpec with Matchers {
     Color(1f, 1f, 1f, 1f).multiplyClamped(2f) shouldBe Color(1f, 1f, 1f, 1f)
     Color(.1f, .2f, .3f, .4f).multiplyClamped(2f, 1f, 2f, 1f) shouldBe Color(.2f, .2f, .6f, .4f)
     Color(.4f, .4f, .4f, .4f).multiply(2f) shouldBe Right(Color(.8f, .8f, .8f, .8f))
+    Color(1f, 1f, 1f, 1f).multiply(1f, 2f, 3f, 4f) shouldBe a[Left[_, Color]]
+    Color(1f, 1f, 1f, 1f).multiplyClamped(1f, 2f, 3f, 4f) shouldBe Color(1f, 1f, 1f, 1f)
   }
 
   it should "linearly interpolate" in {
@@ -103,6 +109,8 @@ class ColorTest extends AnyFlatSpec with Matchers {
     Color(.2f, .2f, .2f, .2f)
       .lerpClamped(.3f, .4f) shouldBe new JColor(.2f, .2f, .2f, .2f).lerp(.3f, .3f, .3f, .3f, .4f).asScala
     Color(1f, 1f, 1f, 1f).lerpClamped(Color(1f, 1f, 1f, 1f), 2f) shouldBe Color(1f, 1f, 1f, 1f)
+    Color(1f, 1f, 1f, 1f).lerp(1f, 2f, 3f, 4f, 100f) shouldBe a[Left[_, Color]]
+    Color(1f, 1f, 1f, 1f).lerpClamped(1f, 2f, 3f, 4f, 100f) shouldBe Color(1f, 1f, 1f, 1f)
   }
 
   it should "premultiply alpha" in {
@@ -164,11 +172,16 @@ class ColorTest extends AnyFlatSpec with Matchers {
     JColor.argb8888ToColor(argb8888, 100)
     Color.fromArgb8888(100) shouldBe argb8888.asScala
 
+    val abgr8888 = new JColor()
+    JColor.abgr8888ToColor(abgr8888, 100f)
+    Color.fromAbgr8888(100f) shouldBe abgr8888.asScala
+
     Color.fromHsv(200, 0f, 1f) shouldBe new JColor().fromHsv(200, 0f, 1f).asScala
 
     Color.fromHex("#FFFFFFFF") shouldBe JColor.valueOf("#FFFFFFFF").asScala
     Color.fromHex("#000000") shouldBe JColor.valueOf("#000000").asScala
     Color(1f, 1f, 1f, 1f).toHex shouldBe "#" + new JColor(1f, 1f, 1f, 1f).toString
+    Color.Black.toHex shouldBe "#" + JColor.BLACK.toString
     Color.fromHex(Refined.unsafeApply(Color.White.toHex)) shouldBe Color.White
   }
 }
