@@ -81,11 +81,15 @@ class Vector2Test extends AnyFlatSpec with Matchers {
     scala.setLength2(5f) shouldBe java.setLength2(5f).asScala
     reset()
 
+    scala.clamp(0f, 10000000f) shouldBe java.clamp(0f, 10000000f).asScala
+    reset()
+    scala.clamp(10000000f, 0f) shouldBe java.clamp(10000000f, 0f).asScala
+    reset()
+    scala.clamp(0f, 0f) shouldBe java.clamp(0f, 0f).asScala
+    reset()
     scala.clamp(0.5f, 0.5f) shouldBe java.clamp(0.5f, 0.5f).asScala
     reset()
     scala.clamp(10000f, 3f) shouldBe java.clamp(10000f, 3f).asScala
-    reset()
-    scala.clamp(0f, 0f) shouldBe java.clamp(0f, 0f).asScala
     reset()
 
     Vector2.distance(1f, 2f, 3f, 4f) shouldBe JVector2.dst(1f, 2f, 3f, 4f)
@@ -135,7 +139,6 @@ class Vector2Test extends AnyFlatSpec with Matchers {
 
     val string = "( 54243.23234 ,   6453543.1)"
     Vector2.fromString(Refined.unsafeApply(string)) shouldBe java.fromString(string).asScala
-
   }
 
   it should "return the same instance" in {
