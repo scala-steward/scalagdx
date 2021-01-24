@@ -14,5 +14,6 @@ class ApplicationAdapterTest extends AnyFlatSpec with Matchers with CatsUnsafeAs
     listener.resume() shouldBe (())
     listener.pause() shouldBe (())
     listener.dispose() shouldBe (())
+    listener.render() shouldBe (())
   }
 }
