@@ -1,16 +1,15 @@
 package scalagdx.math
 
-import eu.timepit.refined.api.Refined
-import eu.timepit.refined.string.MatchesRegex
-import eu.timepit.refined.W
+import scala.math.abs
+import scala.math.sqrt
 
 import com.badlogic.gdx.math.Interpolation
-import eu.timepit.refined.api.Refined
-import scala.math.sqrt
-import scala.math.abs
-import eu.timepit.refined.auto._
 import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.math.{Vector2 => JVector2}
+import eu.timepit.refined.W
+import eu.timepit.refined.api.Refined
+import eu.timepit.refined.auto._
+import eu.timepit.refined.string.MatchesRegex
 
 /**
  * Immutable representation of a 2D vector.
@@ -355,7 +354,7 @@ object Vector2 {
   /**
    * The euclidean length
    */
-  def length(x: Float, y: Float): Float = sqrt((x * x + y * y).toDouble).toFloat
+  def length(x: Float, y: Float): Float = sqrt(length2(x, y).toDouble).toFloat
 
   /**
    * Faster performance by avoiding having to sqrt. Do not use for actual length.
@@ -373,9 +372,8 @@ object Vector2 {
    * Distance between this vector and the given vector.
    * Slightly faster performance compared to [[distance]]
    */
-  def distance2(x1: Float, y1: Float, x2: Float, y2: Float): Float = {
-    val xDistance = x2 - x1
-    val yDistance = y2 - y1
-    xDistance * xDistance + yDistance * yDistance
-  }
+  def distance2(x1: Float, y1: Float, x2: Float, y2: Float): Float = length2(
+    x = x2 - x1,
+    y = y2 - y1
+  )
 }
