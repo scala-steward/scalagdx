@@ -1,4 +1,4 @@
-package scalagdx.app.utils
+package scalagdx.utils
 
 import cats.effect.IO
 
@@ -9,10 +9,11 @@ trait UnsafeAsync[F[_]] {
 
   /**
    * Triggers the evaluation of the source and any suspended
-   * side effects, re-throwing the error if unhandled
+   * side effects, re-throwing the error if unhandled.
    */
   def unsafeRunAsync(ev: F[Unit]): Unit
 
+  @SuppressWarnings(Array("org.wartremover.warts.Throw"))
   protected final def handleError(cb: Either[Throwable, Unit]): Unit = cb match {
     case Left(exception) => throw exception
     case _ => ()
@@ -33,7 +34,7 @@ trait CatsUnsafeAsync {
   /**
    * Provides a [[UnsafeAsync]] instance for cat's [[IO]] monad.
    */
-  implicit lazy val catsUnsafeAsync: UnsafeAsync[IO] = new UnsafeAsync[IO] {
+  implicit val catsUnsafeAsync: UnsafeAsync[IO] = new UnsafeAsync[IO] {
 
     override def unsafeRunAsync(ev: IO[Unit]): Unit = ev.unsafeRunAsync(handleError)
   }

@@ -3,7 +3,7 @@ package scalagdx.app
 import cats.effect.IO
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
-import scalagdx.app.utils.CatsUnsafeAsync
+import scalagdx.utils.CatsUnsafeAsync
 
 class ApplicationAdapterTest extends AnyFlatSpec with Matchers with CatsUnsafeAsync {
 

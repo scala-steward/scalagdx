@@ -6,7 +6,7 @@ import cats.effect.Sync
 import com.badlogic.gdx.{ApplicationListener => JApplicationListener}
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
-import scalagdx.app.utils.CatsUnsafeAsync
+import scalagdx.utils.CatsUnsafeAsync
 
 final class ExampleApplicationListener[F[_]: Sync: ApplicativeError[*[_], Throwable]] extends ApplicationListener[F] {
 

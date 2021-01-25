@@ -118,11 +118,12 @@ lazy val root = project
     unmanagedSourceDirectories in Test := Nil,
     unmanagedSourceDirectories in IntegrationTest := Nil
   )
-  .aggregate(app, log, graphics, math)
+  .aggregate(app, log, graphics, math, utils)
 
 lazy val app = project
   .in(file("modules/app"))
   .configs(IntegrationTest)
+  .dependsOn(utils)
   .settings(commonSettings ++ publishSettings: _*)
   .settings(
     name := "gdx-app",
@@ -154,3 +155,9 @@ lazy val math = project
     name := "gdx-graphics",
     libraryDependencies += refined
   )
+
+lazy val utils = project
+  .in(file("modules/utils"))
+  .configs(IntegrationTest)
+  .settings(commonSettings ++ publishSettings: _*)
+  .settings(name := "gdx-utils")

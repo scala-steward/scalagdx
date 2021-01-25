@@ -1,8 +1,8 @@
 package scalagdx.app
 
 import com.badlogic.gdx.{ApplicationListener => JApplicationListener}
-import scalagdx.app.utils.Disposable
-import scalagdx.app.utils.UnsafeAsync
+import scalagdx.utils.Disposable
+import scalagdx.utils.UnsafeAsync
 
 /**
  * Used to handle the [[com.badlogic.gdx.Application]] lifecycle
