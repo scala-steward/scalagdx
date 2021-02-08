@@ -2,7 +2,8 @@
 [![license](https://img.shields.io/badge/license-MIT-green)](https://opensource.org/licenses/MIT)
 
 Scala prefers immutability, while LibGDX only provides mutable data containers.  
-This module aims to provide scala friendly syntax for existing classes.
+This module provides immutable variants of vectors, as well as utility methods to lower verbosity.  
+Due to the modularity of the framework, you can choose to use only this module with LibGDX for convenience, if desired.
 
 ## Vector2
 
@@ -182,5 +183,5 @@ And in fact, this is also a shortcut to the import right above:
 ```scala
 import scalagdx.math.implicits._
 ```
-Therefore, the simplest way to import implicits required for the math module is ``import scalagdx.math.implicits._``
+Therefore, the simplest way to import implicits required for the math module is ``import scalagdx.math.implicits._``  
 Make sure there are no duplicate imports as that can cause issues with the compiler.
