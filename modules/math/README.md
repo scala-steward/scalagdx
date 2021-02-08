@@ -185,3 +185,21 @@ import scalagdx.math.implicits._
 ```
 Therefore, the simplest way to import implicits required for the math module is ``import scalagdx.math.implicits._``  
 Make sure there are no duplicate imports as that can cause issues with the compiler.
+
+## What is refined?
+
+You may notice some parameters in the vector classes require a refined type. Refined is a library used for compile-time validation.  
+For example, ``Vector2#fromString`` requires a string in the form ``"(x,y)"``:
+```scala
+import eu.timepit.refined.auto._
+Vector2.fromString("(123,456)") // x = 123, y = 456
+Vector2.fromString("(  123  ,  456   )") // x = 123, y = 456
+Vector2.fromString("(123,456)  ") // Fails to compile due to space after )
+Vector2.fromString("ABCDEFG") // Fails to compile
+```
+But what if I want to refine a value at runtime and I know its value is valid? Use ``Refined#unsafeApply``:
+```scala
+val string = "(123,456)"
+Vector2.fromString(Refined.unsafeApply(string)) // x = 123, y = 456
+```
+Click [here](https://github.com/fthomas/refined) for more information on how to use refined.
