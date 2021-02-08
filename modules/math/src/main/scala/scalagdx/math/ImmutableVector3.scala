@@ -18,7 +18,7 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
- * 
+ *
  * This product includes software developed at libGDX (https://libgdx.com/).
  */
 package scalagdx.math
@@ -35,6 +35,9 @@ import scalagdx.math.syntax.vector3._
 
 import math._
 
+/**
+ * Representation of an immutable 3D vector.
+ */
 final case class ImmutableVector3(x: Float = 0f, y: Float = 0f, z: Float = 0f) extends Vector3[ImmutableVector3] {
 
   override def hashCode: Int = super.hashCode
