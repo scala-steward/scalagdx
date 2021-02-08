@@ -1,132 +1,214 @@
+/**
+ * Copyright (c) 2021 scalagdx
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 package scalagdx.math
 
 import com.badlogic.gdx.math.Interpolation
 import eu.timepit.refined.W
 import eu.timepit.refined.api.Refined
-import eu.timepit.refined.auto._
 import eu.timepit.refined.boolean.And
 import eu.timepit.refined.numeric.GreaterEqual
 import eu.timepit.refined.numeric.LessEqual
 import scalagdx.math.Vector.Alpha
 
 /**
- * Immutable vector representation. All methods that return T gives a new vector.
+ * Generic representation of a mutable or immutable vector.
  */
-trait Vector[T <: Vector[T]] {
+trait Vector[V[_], T] extends Ordered[V[_]] {
 
   /**
-   * The euclidean length
+   * The euclidean length.
    */
-  def length: Float
+  def len: Float
 
   /**
-   * Faster performance by avoiding having to sqrt. Do not use for actual length.
-   * Useful for comparisons.
+   * The squared euclidean length. Faster performance than [[len]], good for comparisons.
    */
-  def length2: Float
+  def len2: Float
 
   /**
-   * Limits the length of this vector, based on the desired maximum length
+   * Limits the length of this vector to the given value.
+   *
+   * @return New instance if using an immutable vector. Otherwise returns the same instance to allow chaining methods.
    */
-  def limit(length: Float): T
+  def limit(value: Float): T
 
   /**
    * Limits the length of this vector, based on the desired maximum length squared.
-   * Slightly faster performance compared to [[limit]]
+   * Faster performance than [[limit]].
+   *
+   * @return New instance if using an immutable vector. Otherwise returns the same instance to allow chaining methods.
    */
-  def limit2(length: Float): T
+  def limit2(value: Float): T
 
   /**
-   * Sets the length of the vector. Does nothing if this vector is zero.
+   * Sets the length of the vector using the given value. Does nothing if this vector is zero.
+   *
+   * @return New instance if using an immutable vector. Otherwise returns the same instance to allow chaining methods.
    */
-  def setLength(length: Float): T
+  def setLength(value: Float): T
 
   /**
-   * Sets the length of this vector, based on the square of the desired length. Does nothing if this vector is zero
-   * Slightly faster performance compared to [[setLength]]
+   * Sets the length of this vector, using the given value, squared. Does nothing if this vector is zero
+   * Faster performance than [[setLength]]
+   *
+   * @return New instance if using an immutable vector. Otherwise returns the same instance to allow chaining methods.
    */
-  def setLength2(length: Float): T
+  def setLength2(value: Float): T
 
   /**
-   *  Clamps this vector's length to given min and max values
+   *  Clamps this vector's length to the given min and max values.
+   *
+   * @return New instance if using an immutable vector. Otherwise returns the same instance to allow chaining methods.
    */
   def clamp(min: Float, max: Float): T
 
   /**
-   * Subtracts this vector by the given vector.
+   * Subtracts this vector by the given value.
+   *
+   * @return New instance if using an immutable vector. Otherwise returns the same instance to allow chaining methods.
    */
-  def subtract(vector: T): T
+  def sub(value: Float): T
 
   /**
-   * @see [[subtract]]
+   * Subtracts this vector by the given vector.
+   *
+   * @return New instance if using an immutable vector. Otherwise returns the same instance to allow chaining methods.
    */
-  def -(vector: T): T
+  def sub(vector: V[_]): T
+
+  /**
+   * Subtracts this vector by the given vector, returning a new instance containing the result.
+   */
+  def -(vector: V[_]): T
+
+  /**
+   * Adds this vector with the given value.
+   *
+   * @return New instance if using an immutable vector. Otherwise returns the same instance to allow chaining methods.
+   */
+  def add(value: Float): T
 
   /**
    * Adds this vector with the given vector.
+   *
+   * @return New instance if using an immutable vector. Otherwise returns the same instance to allow chaining methods.
    */
-  def add(vector: T): T
+  def add(vector: V[_]): T
 
   /**
-   * @see [[add]]
+   * Adds this vector with the given vector, returning a new instance containing the result.
    */
-  def +(vector: T): T
+  def +(vector: V[_]): T
+
+  /**
+   * Multiplies this vector with the given value.
+   *
+   * @return New instance if using an immutable vector. Otherwise returns the same instance to allow chaining methods.
+   */
+  def scl(value: Float): T
 
   /**
    * Multiplies this vector with the given vector.
+   *
+   * @return New instance if using an immutable vector. Otherwise returns the same instance to allow chaining methods.
    */
-  def multiply(vector: T): T
+  def scl(vector: V[_]): T
 
   /**
-   * @see [[multiply]]
+   * Multiplies this vector with the given vector, returning a new instance containing the result.
    */
-  def *(vector: T): T
+  def *(vector: V[_]): T
+
+  /**
+   * Divides this vector by the given value.
+   *
+   * @return New instance if using an immutable vector. Otherwise returns the same instance to allow chaining methods.
+   */
+  def div(value: Float): T
 
   /**
    * Divides this vector by the given vector.
+   *
+   * @return New instance if using an immutable vector. Otherwise returns the same instance to allow chaining methods.
    */
-  def divide(vector: T): T
+  def div(vector: V[_]): T
 
   /**
-   * @see [[divide]]
+   * Divides this vector by the given vector, returning a new instance containing the result.
    */
-  def /(vector: T): T
+  def /(vector: V[_]): T
+
+  /**
+   * Multiplies the given vector by the given scalar value, then add it to this vector.
+   *
+   * @return New instance if using an immutable vector. Otherwise returns the same instance to allow chaining methods.
+   */
+  def mulAdd(vector: V[_], scalar: Float): T
+
+  /**
+   * Multiplies the given vector by the given scalar vector, then add it to this vector.
+   *
+   * @return New instance if using an immutable vector. Otherwise returns the same instance to allow chaining methods.
+   */
+  def mulAdd(vector: V[_], scalar: V[_]): T
 
   /**
    * Normalizes this vector. Does nothing if this vector is zero.
+   *
+   * @return New instance if using an immutable vector. Otherwise returns the same instance to allow chaining methods.
    */
-  def normalize: T
-
-  /**
-   * Distance between this vector and the given vector
-   */
-  def distance(vector: T): Float
+  def nor: T
 
   /**
    * Distance between this vector and the given vector.
-   * Slightly faster performance compared to [[distance]]
    */
-  def distance2(vector: T): Float
+  def dst(vector: V[_]): Float
+
+  /**
+   * Squared distance between this vector and the given vector.
+   * Faster performance than [[dst]].
+   */
+  def dst2(vector: V[_]): Float
 
   /**
    * Linearly interpolates between this vector and the target vector by alpha.
    *
-   * @param vector The target vector
-   * @param alpha The interpolation coefficient, in the range [0, 1]
+   * @param vector The target vector.
+   * @param alpha The interpolation coefficient, in the range [0, 1].
+   *
+   * @return New instance if using an immutable vector. Otherwise returns the same instance to allow chaining methods.
    */
-  def lerp(vector: T, alpha: Float Refined Alpha): T
+  def lerp(vector: V[_], alpha: Float Refined Alpha): T
 
   /**
    * Interpolates between this vector and the target vector by alpha.
    *
-   * @param vector The target vector
-   * @param alpha The interpolation coefficient, in the range [0, 1]
-   * @param interpolation The interpolation method
+   * @param vector The target vector.
+   * @param alpha The interpolation coefficient, in the range [0, 1].
+   * @param interpolation The interpolation method.
+   *
+   * @return New instance if using an immutable vector. Otherwise returns the same instance to allow chaining methods.
    */
-  def interpolate(vector: T, alpha: Float Refined Alpha, interpolation: Interpolation): T
-
-  // TODO: Maybe take in a seed to keep the method referentially transparent?
-  //def setToRandomDirection: T
+  def interpolate(vector: V[_], alpha: Float Refined Alpha, interpolation: Interpolation): T
 
   /**
    * Check if this vector is a unit length vector.
@@ -149,80 +231,80 @@ trait Vector[T <: Vector[T]] {
   def isZero(margin: Float): Boolean
 
   /**
-   * Check if this vector is in line with the given vector (either in the same or the opposite direction)
+   * Check if this vector is in line with the given vector (either in the same or the opposite direction).
    */
-  def isOnLine(vector: T, epsilon: Float): Boolean
+  def isOnLine(vector: V[_], epsilon: Float): Boolean
 
   /**
-   * Check if this vector is in line with the given vector (either in the same or the opposite direction)
+   * Check if this vector is in line with the given vector (either in the same or the opposite direction).
    */
-  def isOnLine(vector: T): Boolean
+  def isOnLine(vector: V[_]): Boolean
 
   /**
-   * Check if this vector is collinear with the given vector
+   * Check if this vector is collinear with the given vector.
    */
-  def isCollinear(vector: T): Boolean
+  def isCollinear(vector: V[_]): Boolean
 
   /**
-   * Check if this vector is collinear with the given vector
+   * Check if this vector is collinear with the given vector.
    */
-  def isCollinear(vector: T, epsilon: Float): Boolean
+  def isCollinear(vector: V[_], epsilon: Float): Boolean
 
   /**
-   * Check if this vector is opposite collinear with the given vector
+   * Check if this vector is opposite collinear with the given vector.
    */
-  def isCollinearOpposite(vector: T): Boolean
+  def isCollinearOpposite(vector: V[_]): Boolean
 
   /**
-   * Check if this vector is opposite collinear with the given vector
+   * Check if this vector is opposite collinear with the given vector.
    */
-  def isCollinearOpposite(vector: T, epsilon: Float): Boolean
+  def isCollinearOpposite(vector: V[_], epsilon: Float): Boolean
 
   /**
-   * Check if this vector is perpendicular to the given vector
+   * Check if this vector is perpendicular to the given vector.
    */
-  def isPerpendicular(vector: T): Boolean
+  def isPerpendicular(vector: V[_]): Boolean
 
   /**
-   * Check if this vector is perpendicular to the given vector
+   * Check if this vector is perpendicular to the given vector.
    */
-  def isPerpendicular(vector: T, epsilon: Float): Boolean
+  def isPerpendicular(vector: V[_], epsilon: Float): Boolean
 
   /**
-   * Check if this vector has a similar direction to the given vector
+   * Check if this vector has a similar direction to the given vector.
    */
-  def hasSameDirection(vector: T): Boolean
+  def hasSameDirection(vector: V[_]): Boolean
 
   /**
-   * Check if this vector has the opposite direction to the given vector
+   * Check if this vector has the opposite direction to the given vector.
    */
-  def hasOppositeDirection(vector: T): Boolean
+  def hasOppositeDirection(vector: V[_]): Boolean
 
   /**
    * Compares this vector with the other vector, using the supplied epsilon for fuzzy equality testing.
    */
-  def epsilonEquals(vector: T, epsilon: Float): Boolean
+  def epsilonEquals(vector: V[_], epsilon: Float): Boolean
 
   /**
-   * Scale the given vector by the given scalar value, then add it to this.
+   * The dot product between this and the given vector.
    */
-  def scaleAdd(vector: T, scalar: Float): T
+  def dot(vector: V[_]): Float
 
   /**
-   * Scale the given vector by the given scalar vector, then add it to this.
+   * Type safe equality comparison.
    */
-  def scaleAdd(vector: T, scalar: T): T
+  def ===(vector: V[_]): Boolean = equals(vector)
 
   /**
-   * The dot product between this and the given vector
+   * Type safe inequality comparison.
    */
-  def dot(vector: T): Float
+  def =!=(vector: V[_]): Boolean = !equals(vector)
 }
 
 object Vector {
 
   /**
-   * Refined predicate which clamps a number to the range [0f, 1f]
+   * Refined predicate which clamps a number to the range [0f, 1f].
    */
   type Alpha = GreaterEqual[W.`0f`.T] And LessEqual[W.`1f`.T]
 }
