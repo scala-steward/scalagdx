@@ -38,9 +38,7 @@ import math._
 /**
  * Representation of an immutable 3D vector.
  */
-final case class ImmutableVector3(x: Float = 0f, y: Float = 0f, z: Float = 0f) extends Vector3[ImmutableVector3] {
-
-  override def hashCode: Int = super.hashCode
+class ImmutableVector3(val x: Float, val y: Float, val z: Float) extends Vector3[ImmutableVector3] {
 
   /**
    * @inheritdoc
@@ -301,6 +299,16 @@ final case class ImmutableVector3(x: Float = 0f, y: Float = 0f, z: Float = 0f) e
 object ImmutableVector3 {
 
   import scalagdx.math.Vector3.XYZ
+
+  /**
+   * Constructs a new [[ImmutableVector3]] using the given (x, y) values.
+   */
+  def apply(x: Float = 0f, y: Float = 0f, z: Float = 0f): ImmutableVector3 = new ImmutableVector3(x, y, z)
+
+  /**
+   * Destructure the [[ImmutableVector3]] for pattern-matching.
+   */
+  def unapply(vector: ImmutableVector3): Option[(Float, Float, Float)] = Some((vector.x, vector.y, vector.z))
 
   /**
    * Creates an [[ImmutableVector3]] from the given spherical coordinate.

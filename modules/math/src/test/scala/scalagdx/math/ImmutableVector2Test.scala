@@ -33,7 +33,17 @@ import org.scalatest.matchers.should.Matchers
 
 class ImmutableVector2Test extends AnyFlatSpec with Matchers {
 
-  "MutableVector2" should "construct through string" in {
+  "ImmutableVector2" should "construct through apply method" in {
+    ImmutableVector2(1f, 2f) shouldBe new ImmutableVector2(1f, 2f)
+  }
+
+  it should "destructure" in {
+    val ImmutableVector2(x, y) = ImmutableVector2(1f, 2f)
+    x shouldBe 1f
+    y shouldBe 2f
+  }
+
+  it should "construct through string" in {
     import scalagdx.math.syntax.vector2._
     val string = "(123.123, 321.12)"
     ImmutableVector2.fromString(Refined.unsafeApply(string)) === MutableVector2().fromString(string) shouldBe true

@@ -18,7 +18,7 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
- * 
+ *
  * This product includes software developed at libGDX (https://libgdx.com/).
  */
 package scalagdx.math
@@ -32,9 +32,7 @@ import math._
 /**
  * Representation of an immutable 2D vector.
  */
-final case class ImmutableVector2(x: Float = 0f, y: Float = 0f) extends Vector2[ImmutableVector2] {
-
-  override def hashCode: Int = super.hashCode
+class ImmutableVector2(val x: Float, val y: Float) extends Vector2[ImmutableVector2] {
 
   /**
    * @inheritdoc
@@ -226,6 +224,16 @@ final case class ImmutableVector2(x: Float = 0f, y: Float = 0f) extends Vector2[
 object ImmutableVector2 {
 
   import scalagdx.math.Vector2.XY
+
+  /**
+   * Constructs a new [[ImmutableVector2]] using the given (x, y) values.
+   */
+  def apply(x: Float = 0f, y: Float = 0f): ImmutableVector2 = new ImmutableVector2(x, y)
+
+  /**
+   * Destructure the [[ImmutableVector2]] for pattern-matching.
+   */
+  def unapply(vector: ImmutableVector2): Option[(Float, Float)] = Some(vector.x -> vector.y)
 
   /**
    * Creates an [[ImmutableVector2]] from a string with the format (x,y).
