@@ -34,6 +34,8 @@ import math._
  */
 class ImmutableVector2(val x: Float, val y: Float) extends Vector2[ImmutableVector2] {
 
+  override def toString(): String = s"ImmutableVector2($x, $y)"
+
   /**
    * @inheritdoc
    */

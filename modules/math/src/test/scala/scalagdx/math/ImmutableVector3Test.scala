@@ -37,6 +37,10 @@ class ImmutableVector3Test extends AnyFlatSpec with Matchers {
     ImmutableVector3(1f, 2f, 3f) shouldBe new ImmutableVector3(1f, 2f, 3f)
   }
 
+  it should "have a string representation" in {
+    ImmutableVector3(1f, 2f, 3f).toString shouldBe "ImmutableVector3(1.0, 2.0, 3.0)"
+  }
+
   it should "destructure" in {
     val ImmutableVector3(x, y, z) = ImmutableVector3(1f, 2f, 3f)
     x shouldBe 1f
@@ -72,7 +76,9 @@ class ImmutableVector3Test extends AnyFlatSpec with Matchers {
   ) = {
     import scalagdx.math.syntax.vector3._
     val result = f(vector)
-    result shouldBe g(mutable).toImmutable
+    val expected = g(mutable).toImmutable
+    result shouldBe expected
+    result shouldNot be(theSameInstanceAs(expected))
     reset()
   }
 

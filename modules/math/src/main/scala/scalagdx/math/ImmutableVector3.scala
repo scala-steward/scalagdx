@@ -40,6 +40,8 @@ import math._
  */
 class ImmutableVector3(val x: Float, val y: Float, val z: Float) extends Vector3[ImmutableVector3] {
 
+  override def toString(): String = s"ImmutableVector3($x, $y, $z)"
+
   /**
    * @inheritdoc
    */
