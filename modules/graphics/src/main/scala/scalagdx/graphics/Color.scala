@@ -1,339 +1,297 @@
+/**
+ * Copyright (c) 2021 scalagdx
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ *
+ * This product includes software developed at libGDX (https://libgdx.com/).
+ */
 package scalagdx.graphics
 
 import scala.annotation.tailrec
 
-import cats.implicits._
-import com.badlogic.gdx.graphics.{Color => JColor}
+import com.badlogic.gdx.utils.NumberUtils
 import eu.timepit.refined.W
 import eu.timepit.refined.api.Refined
 import eu.timepit.refined.auto._
 import eu.timepit.refined.boolean.And
 import eu.timepit.refined.numeric.GreaterEqual
 import eu.timepit.refined.numeric.LessEqual
-import eu.timepit.refined.refineV
 import eu.timepit.refined.string.MatchesRegex
-import scalagdx.graphics.Color.RGBA
-import scalagdx.graphics.ext.ColorOps
 
 /**
- * Color represented by its RGBA values in the range [0, 1]
+ * Representation of a mutable or immutable color.
  */
-final case class Color(
-    r: Float Refined RGBA,
-    g: Float Refined RGBA,
-    b: Float Refined RGBA,
-    a: Float Refined RGBA
-) {
+trait Color[T] extends Ordered[Color[_]] {
+
+  import scalagdx.graphics.Color._
 
   /**
-   * Converts this into the java equivalent.
+   * The red value of the color, has a range of [0, 1]
    */
-  lazy val asJava: JColor = new JColor(r, g, b, a)
+  def r: Float Refined RGBA
 
   /**
-   * Applies the function f to this color's RGBA values and the given RGBA values.
-   *
-   * @param color The color to use with the function f
-   * @param f The first float represents this color's RGBA values. The second float represents the parameter color's RGBA values.
-   * @return [[Left]] if any RGBA value is out of the range of [0,1], otherwise returns a [[Right]] with the new color
+   * The green value of the color, has a range of [0, 1]
    */
-  private def operator(r: Float, g: Float, b: Float, a: Float)(f: (Float, Float) => Float): Either[String, Color] =
-    for {
-      r <- refineV[RGBA](f(this.r, r))
-      g <- refineV[RGBA](f(this.g, g))
-      b <- refineV[RGBA](f(this.b, b))
-      a <- refineV[RGBA](f(this.a, a))
-    } yield Color(r, g, b, a)
+  def g: Float Refined RGBA
 
   /**
-   * Applies the function f to this color's RGBA values and the given value.
-   *
-   * @param color The color to use with the function f
-   * @param f The first float represents this color's RGBA values. The second float represents the parameter color's RGBA values.
-   * @return [[Left]] if any RGBA value is out of the range of [0,1], otherwise returns a [[Right]] with the new color
+   * The blue blue of the color, has a range of [0, 1]
    */
-  private def operator(value: Float)(f: (Float, Float) => Float): Either[String, Color] =
-    operator(value, value, value, value)(f)
+  def b: Float Refined RGBA
 
   /**
-   * Applies the function f to this color's RGBA values and the given color's values.
-   *
-   * @param color The color to use with the function f
-   * @param f The first float represents this color's RGBA values. The second float represents the parameter color's RGBA values.
-   * @return [[Left]] if any RGBA value is out of the range of [0,1], otherwise returns a [[Right]] with the new color
+   * The alpha alpha of the color, has a range of [0, 1]
    */
-  private def operator(color: Color)(f: (Float, Float) => Float): Either[String, Color] =
-    operator(color.r, color.g, color.b, color.a)(f)
+  def a: Float Refined RGBA
 
   /**
-   * Clamps a float value to a range of [0, 1]
+   * Converts this color to the mutable equivalent.<br>
+   * If this color is already mutable, returns the same instance.
    */
-  private def clamp(value: Float): Float Refined RGBA =
-    if (value > 1f) 1f
-    else if (value < 0f) 0f
-    else Refined.unsafeApply(value)
+  def toMutable: MutableColor
 
   /**
-   * Applies the function f to this color's RGBA values and the given RGBA values.
+   * Converts this color to the immutable equivalent.<br>
+   * If this color is already immutable, returns the same instance.
+   */
+  def toImmutable: ImmutableColor
+
+  override def equals(obj: Any): Boolean = obj match {
+    case that: Color[_] => toIntBits == that.toIntBits
+    case _ => false
+  }
+
+  @SuppressWarnings(Array("org.wartremover.warts.Var"))
+  override def hashCode: Int = {
+    def convert(value: Float) = if (value != 0f) NumberUtils.floatToIntBits(value) else 0
+    var result = convert(r)
+    result = 31 * result + convert(g)
+    result = 31 * result + convert(b)
+    result = 31 * result + convert(a)
+    result
+  }
+
+  /**
+   * Creates a copy of this color, using the given values.
+   */
+  def copy(
+      r: Float Refined RGBA = this.r,
+      g: Float Refined RGBA = this.g,
+      b: Float Refined RGBA = this.b,
+      a: Float Refined RGBA = this.a
+  ): T
+
+  /**
+   * Multiplies this color with the given RGBA values.
    * Clamps the returned color's RGBA values to the range of [0, 1].
    *
-   * @param color The color to use with the function f
-   * @param f The first float represents this color's RGBA values. The second float represents the parameter color's RGBA values.
+   * @return New instance if using an immutable color. Otherwise returns the same instance to allow chaining methods.
    */
-  private def operatorClamped(r: Float, g: Float, b: Float, a: Float)(f: (Float, Float) => Float): Color = Color(
-    r = clamp(f(this.r, r)),
-    g = clamp(f(this.g, g)),
-    b = clamp(f(this.b, b)),
-    a = clamp(f(this.a, a))
+  def mul(r: Float, g: Float, b: Float, a: Float): T
+
+  /**
+   * Multiplies this color with the given value.
+   * Clamps the returned color's RGBA values to the range of [0, 1].
+   *
+   * @return New instance if using an immutable color. Otherwise returns the same instance to allow chaining methods.
+   */
+  def mul(value: Float): T = mul(value, value, value, value)
+
+  /**
+   * Multiplies this color with the given color.
+   * Clamps the returned color's RGBA values to the range of [0, 1].
+   *
+   * @return New instance if using an immutable color. Otherwise returns the same instance to allow chaining methods.
+   */
+  def mul(color: Color[_]): T = mul(color.r, color.g, color.b, color.a)
+
+  /**
+   * Multiplies this color by the given color, returning a new instance containing the result.
+   * Clamps the returned color's RGBA values to the range of [0, 1].
+   */
+  def *(color: Color[_]): T
+
+  /**
+   * Adds this color with the given RGBA values.
+   * Clamps the returned color's RGBA values to the range of [0, 1].
+   *
+   * @return New instance if using an immutable color. Otherwise returns the same instance to allow chaining methods.
+   */
+  def add(r: Float, g: Float, b: Float, a: Float): T
+
+  /**
+   * Adds this color with the given value.
+   * Clamps the returned color's RGBA values to the range of [0, 1].
+   *
+   * @return New instance if using an immutable color. Otherwise returns the same instance to allow chaining methods.
+   */
+  def add(value: Float): T = add(value, value, value, value)
+
+  /**
+   * Adds this color with the given color.
+   * Clamps the returned color's RGBA values to the range of [0, 1].
+   *
+   * @return New instance if using an immutable color. Otherwise returns the same instance to allow chaining methods.
+   */
+  def add(color: Color[_]): T = add(color.r, color.g, color.b, color.a)
+
+  /**
+   * Adds this color with the given RGBA values, returning a new instance containing the result.
+   * Clamps the returned color's RGBA values to the range of [0, 1].
+   */
+  def +(color: Color[_]): T
+
+  /**
+   * Subtracts this color by the given RGBA values.
+   * Clamps the returned color's RGBA values to the range of [0, 1].
+   *
+   * @return New instance if using an immutable color. Otherwise returns the same instance to allow chaining methods.
+   */
+  def sub(r: Float, g: Float, b: Float, a: Float): T
+
+  /**
+   * Subtracts this color by the given value.
+   * Clamps the returned color's RGBA values to the range of [0, 1].
+   *
+   * @return New instance if using an immutable color. Otherwise returns the same instance to allow chaining methods.
+   */
+  def sub(value: Float): T = sub(value, value, value, value)
+
+  /**
+   * Subtracts this color by the given color.
+   * Clamps the returned color's RGBA values to the range of [0, 1].
+   *
+   * @return New instance if using an immutable color. Otherwise returns the same instance to allow chaining methods.
+   */
+  def sub(color: Color[_]): T = sub(color.r, color.g, color.b, color.a)
+
+  /**
+   * Subtracts this color by the given RGBA values, returning a new instance containing the result.
+   * Clamps the returned color's RGBA values to the range of [0, 1].
+   */
+  def -(color: Color[_]): T
+
+  /**
+   * Divides this color by the given RGBA values.
+   * Clamps the returned color's RGBA values to the range of [0, 1].
+   *
+   * @return New instance if using an immutable color. Otherwise returns the same instance to allow chaining methods.
+   */
+  def div(r: Float, g: Float, b: Float, a: Float): T
+
+  /**
+   * Divides this color by the given value.
+   * Clamps the returned color's RGBA values to the range of [0, 1].
+   *
+   * @return New instance if using an immutable color. Otherwise returns the same instance to allow chaining methods.
+   */
+  def div(value: Float): T = div(value, value, value, value)
+
+  /**
+   * Divides this color by the given color.
+   * Clamps the returned color's RGBA values to the range of [0, 1].
+   *
+   * @return New instance if using an immutable color. Otherwise returns the same instance to allow chaining methods.
+   */
+  def div(color: Color[_]): T = div(color.r, color.g, color.b, color.a)
+
+  /**
+   * Divides this color by the given RGBA values, returning a new instance containing the result.
+   * Clamps the returned color's RGBA values to the range of [0, 1].
+   */
+  def /(color: Color[_]): T
+
+  /**
+   * Linearly interpolates between this color and the given RGBA values, using the provided alpha value.
+   * Clamps the returned color's RGBA values to the range of [0, 1].
+   *
+   * @param alpha Interpolation coefficient, in the range of [0, 1]
+   * @return New instance if using an immutable color. Otherwise returns the same instance to allow chaining methods.
+   */
+  def lerp(r: Float, g: Float, b: Float, a: Float, alpha: Float Refined Alpha): T = add(
+    r = (r - this.r) * alpha,
+    g = (g - this.g) * alpha,
+    b = (b - this.b) * alpha,
+    a = (a - this.a) * alpha
   )
 
   /**
-   * Applies the function f to this color's RGBA values and the given value.
+   * Linearly interpolates between this color and the given color, using the provided alpha value.
    * Clamps the returned color's RGBA values to the range of [0, 1].
    *
-   * @param color The color to use with the function f
-   * @param f The first float represents this color's RGBA values. The second float represents the parameter color's RGBA values.
+   * @param alpha Interpolation coefficient, in the range of [0, 1]
+   * @return New instance if using an immutable color. Otherwise returns the same instance to allow chaining methods.
    */
-  private def operatorClamped(value: Float)(f: (Float, Float) => Float): Color =
-    operatorClamped(value, value, value, value)(f)
+  def lerp(color: Color[_], alpha: Float Refined Alpha): T = lerp(color.r, color.g, color.b, color.a, alpha)
 
   /**
-   * Applies the function f to this color's RGBA values and the given color's values.
+   * Multiplies this color's RGB values by its alpha value.
    * Clamps the returned color's RGBA values to the range of [0, 1].
    *
-   * @param color The color to use with the function f
-   * @param f The first float represents this color's RGBA values. The second float represents the parameter color's RGBA values.
+   * @return New instance if using an immutable color. Otherwise returns the same instance to allow chaining methods
    */
-  private def operatorClamped(color: Color)(f: (Float, Float) => Float): Color =
-    operatorClamped(color.r, color.g, color.b, color.a)(f)
-
-  private def addition: (Float, Float) => Float = _ + _
+  def premultiplyAlpha: T = mul(a, a, a, 1)
 
   /**
-   * Adds this color's RGBA values with the given RGBA values.
-   *
-   * @return [[Left]] if any RGBA value is out of the range of [0, 1], otherwise returns a [[Right]] with the new color
+   * Packs this color's values into a 32-bit integer with the format ABGR.
    */
-  def add(r: Float, g: Float, b: Float, a: Float): Either[String, Color] = operator(r, g, b, a)(addition)
-
-  /**
-   * Adds this color's RGBA values with the given value.
-   *
-   * @return [[Left]] if any RGBA value is out of the range of [0, 1], otherwise returns a [[Right]] with the new color
-   */
-  def add(value: Float): Either[String, Color] = operator(value)(addition)
-
-  /**
-   * Adds this color's RGBA values with the given color's values.
-   *
-   * @return [[Left]] if any RGBA value is out of the range of [0, 1], otherwise returns a [[Right]] with the new color
-   */
-  def add(color: Color): Either[String, Color] = operator(color)(addition)
-
-  /**
-   * Adds this color's RGBA values with the given RGBA values.
-   * Clamps the returned color's RGBA values to the range of [0, 1].
-   */
-  def addClamped(r: Float, g: Float, b: Float, a: Float): Color = operatorClamped(r, g, b, a)(addition)
-
-  /**
-   * Adds this color's RGBA values with the given RGBA values.
-   * Clamps the returned color's RGBA values to the range of [0, 1].
-   */
-  def addClamped(value: Float): Color = operatorClamped(value)(addition)
-
-  /**
-   * Adds this color's RGBA values with the given color's values.
-   * Clamps the returned color's RGBA values to the range of [0, 1].
-   */
-  def addClamped(color: Color): Color = operatorClamped(color)(addition)
-
-  /**
-   * Adds this color's RGBA values with the given color's values.
-   * Clamps the returned color's RGBA values to the range of [0, 1].
-   */
-  def +(color: Color): Color = addClamped(color)
-
-  private def subtraction: (Float, Float) => Float = _ - _
-
-  /**
-   * Subtracts this color's RGBA values by the given RGBA values.
-   *
-   * @return [[Left]] if any RGBA value is out of the range of [0, 1], otherwise returns a [[Right]] with the new color
-   */
-  def subtract(r: Float, g: Float, b: Float, a: Float): Either[String, Color] = operator(r, g, b, a)(subtraction)
-
-  /**
-   * Subtracts this color's RGBA values by the given value.
-   *
-   * @return [[Left]] if any RGBA value is out of the range of [0, 1], otherwise returns a [[Right]] with the new color
-   */
-  def subtract(value: Float): Either[String, Color] = operator(value)(subtraction)
-
-  /**
-   * Subtracts this color's RGBA values by the given color's values.
-   *
-   * @return [[Left]] if any RGBA value is out of the range of [0, 1], otherwise returns a [[Right]] with the new color
-   */
-  def subtract(color: Color): Either[String, Color] = operator(color)(subtraction)
-
-  /**
-   * Subtracts this color's RGBA values by the given RGBA values.
-   * Clamps the returned color's RGBA values to the range of [0, 1].
-   */
-  def subtractClamped(r: Float, g: Float, b: Float, a: Float): Color = operatorClamped(r, g, b, a)(subtraction)
-
-  /**
-   * Subtracts this color's RGBA values by the given value.
-   * Clamps the returned color's RGBA values to the range of [0, 1].
-   */
-  def subtractClamped(value: Float): Color = operatorClamped(value)(subtraction)
-
-  /**
-   * Subtracts this color's RGBA values with the given color's values.
-   * Clamps the returned color's RGBA values to the range of [0, 1].
-   */
-  def subtractClamped(color: Color): Color = operatorClamped(color)(subtraction)
-
-  /**
-   * Subtracts this color's RGBA values with the given color's values.
-   * Clamps the returned color's RGBA values to the range of [0, 1].
-   */
-  def -(color: Color): Color = subtractClamped(color)
-
-  private def multiplication: (Float, Float) => Float = _ * _
-
-  /**
-   * Multiplies this color's RGBA values with the given RGBA values.
-   *
-   * @return [[Left]] if any RGBA value is out of the range of [0, 1], otherwise returns a [[Right]] with the new color
-   */
-  def multiply(r: Float, g: Float, b: Float, a: Float): Either[String, Color] = operator(r, g, b, a)(multiplication)
-
-  /**
-   * Multiplies this color's RGBA values with the given value.
-   *
-   * @return [[Left]] if any RGBA value is out of the range of [0, 1], otherwise returns a [[Right]] with the new color
-   */
-  def multiply(value: Float): Either[String, Color] = operator(value)(multiplication)
-
-  /**
-   * Multiplies this color's RGBA values with the given color's values.
-   *
-   * @return [[Left]] if any RGBA value is out of the range of [0, 1], otherwise returns a [[Right]] with the new color
-   */
-  def multiply(color: Color): Either[String, Color] = operator(color)(multiplication)
-
-  /**
-   * Multiplies this color's RGBA values with the given RGBA values.
-   * Clamps the returned color's RGBA values to the range of [0, 1].
-   */
-  def multiplyClamped(r: Float, g: Float, b: Float, a: Float): Color = operatorClamped(r, g, b, a)(multiplication)
-
-  /**
-   * Multiplies this color's RGBA values with the given value.
-   * Clamps the returned color's RGBA values to the range of [0, 1].
-   */
-  def multiplyClamped(value: Float): Color = operatorClamped(value)(multiplication)
-
-  /**
-   * Multiplies this color's RGBA values with the given color's values.
-   * Clamps the returned color's RGBA values to the range of [0, 1].
-   */
-  def multiplyClamped(color: Color): Color = operatorClamped(color)(multiplication)
-
-  /**
-   * Multiplies this color's RGBA values with the given color's values.
-   * Clamps the returned color's RGBA values to the range of [0, 1].
-   */
-  def *(color: Color): Color = multiplyClamped(color)
-
-  private def linearInterpolation(coefficient: Float)(current: Float, target: Float): Float =
-    current + (coefficient * (target - current))
-
-  /**
-   * Linearly interpolates between this color and the target RGBA values by the given coefficient.
-   *
-   * @return [[Left]] if any RGBA value is out of the range of [0, 1], otherwise returns a [[Right]] with the new color
-   */
-  def lerp(r: Float, g: Float, b: Float, a: Float, coefficient: Float): Either[String, Color] =
-    operator(r, g, b, a)(linearInterpolation(coefficient))
-
-  /**
-   * Linearly interpolates between this color and the target color's values by the given coefficient.
-   *
-   * @return [[Left]] if any RGBA value is out of the range of [0, 1], otherwise returns a [[Right]] with the new color
-   */
-  def lerp(color: Color, coefficient: Float): Either[String, Color] =
-    operator(color)(linearInterpolation(coefficient))
-
-  /**
-   * Linearly interpolates between this color and the target value by the given coefficient.
-   *
-   * @return [[Left]] if any RGBA value is out of the range of [0, 1], otherwise returns a [[Right]] with the new color
-   */
-  def lerp(value: Float, coefficient: Float): Either[String, Color] =
-    operator(value)(linearInterpolation(coefficient))
-
-  /**
-   * Linearly interpolates between this color and the target RGBA values by the given coefficient.
-   * Clamps the returned color's RGBA values to the range of [0, 1].
-   */
-  def lerpClamped(r: Float, g: Float, b: Float, a: Float, coefficient: Float): Color =
-    operatorClamped(r, g, b, a)(linearInterpolation(coefficient))
-
-  /**
-   * Linearly interpolates between this color and the target color's values by the given coefficient.
-   * Clamps the returned color's RGBA values to the range of [0, 1].
-   */
-  def lerpClamped(color: Color, coefficient: Float): Color =
-    operatorClamped(color)(linearInterpolation(coefficient))
-
-  /**
-   * Linearly interpolates between this color and the target value by the given coefficient.
-   * Clamps the returned color's RGBA values to the range of [0, 1].
-   */
-  def lerpClamped(value: Float, coefficient: Float): Color =
-    operatorClamped(value)(linearInterpolation(coefficient))
-
-  /**
-   * Multiplies the RGB values by the alpha value.
-   */
-  def premultiplyAlpha: Color = Color(
-    // Using unsafeApply because a refineV check is unnecessary here
-    r = Refined.unsafeApply(r * a),
-    g = Refined.unsafeApply(g * a),
-    b = Refined.unsafeApply(b * a),
-    a = a
+  def toIntBits: Int = Color.toIntBits(
+    Refined.unsafeApply((r * 255f).toInt),
+    Refined.unsafeApply((g * 255f).toInt),
+    Refined.unsafeApply((b * 255f).toInt),
+    Refined.unsafeApply((a * 255f).toInt)
   )
 
   /**
-   * Packs the color components into a 32-bit integer with the format ABGR and then converts it to a float.
+   * Packs this color's values into a 32-bit integer with the format ABGR, then coverts it back to a float.
+   * Note: Converting to a float and back can be lossy for its alpha value.
    */
   def toFloatBits: Float = Color.toFloatBits(r, g, b, a)
 
   /**
-   * Packs the color components into a 32-bit integer with the format ABGR.
+   * Packs this color's values into a 32-bit integer with the format RGB565.
    */
-  def toIntBits: Int = Color.toIntBits(
-    r = Refined.unsafeApply((r.value * 255f).toInt),
-    g = Refined.unsafeApply((g.value * 255f).toInt),
-    b = Refined.unsafeApply((b.value * 255f).toInt),
-    a = Refined.unsafeApply((a.value * 255f).toInt)
-  )
-
-  def rgb565: Int = JColor.rgb565(asJava)
-
-  def rgba4444: Int = JColor.rgba4444(asJava)
-
-  def rgb888: Int = JColor.rgb888(asJava)
-
-  def rgba8888: Int = JColor.rgba8888(asJava)
-
-  def argb8888: Int = JColor.argb8888(asJava)
+  def toRgb565: Int = Color.toRgb565(r, g, b)
 
   /**
-   * Converts this color to a hex string with the RRGGBBAA format.
+   * Packs this color's values into a 32-bit integer with the format RGB4444.
+   */
+  def toRgba4444: Int = Color.toRgba4444(r, g, b, a)
+
+  /**
+   * Packs this color's values into a 32-bit integer with the format RGB888.
+   */
+  def toRgb888: Int = Color.toRgb888(r, g, b)
+
+  /**
+   * Packs this color's values into a 32-bit integer with the format RGBA8888.
+   */
+  def toRgba8888: Int = Color.toRgba8888(r, g, b, a)
+
+  /**
+   * Packs the ABGR values into a 32-bit integer with the format ARGB8888.
+   */
+  def toArgb8888: Int = Color.toArgb8888(a, r, g, b)
+
+  /**
+   * Converts the color to an encoded hex string with the format RRGGBBAA.
    */
   def toHex: String = {
     @tailrec def hex(value: String): String = {
@@ -343,14 +301,50 @@ final case class Color(
     "#" +
       hex((((255 * r).toInt << 24) | ((255 * g).toInt << 16) | ((255 * b).toInt << 8) | ((255 * a).toInt)).toHexString)
   }
+
+  /**
+   * Extracts the Hue-Saturation-Value of the color.
+   */
+  def toHsv: Hsv = {
+    val max = math.max(math.max(r, g), b)
+    val min = math.min(math.min(r, g), b)
+    val range = max - min
+    def hue(v1: Float, v2: Float, a: Float) = 60f * (v1 - v2) / range + a
+    Hsv(
+      h =
+        if (range == 0f) 0f
+        else if (max == r.value) hue(g, b, 360f) % 360f
+        else if (max == g.value) hue(b, r, 120f)
+        else hue(r, g, 240f),
+      s = if (max > 0f) 1f - min / max else 0f,
+      v = max
+    )
+  }
+
+  override def compare(that: Color[_]): Int = toIntBits.compare(that.toIntBits)
+
+  /**
+   * Type safe equality comparison.
+   */
+  def ===(color: Color[_]): Boolean = equals(color)
+
+  /**
+   * Type safe inequality comparison.
+   */
+  def =!=(color: Color[_]): Boolean = !equals(color)
 }
 
 object Color {
 
   /**
-   * Refined predicate which clamps a number to the range [0f, 1f]
+   * Refined predicate which clamps a number to the range [0, 1]
    */
   type RGBA = GreaterEqual[W.`0f`.T] And LessEqual[W.`1f`.T]
+
+  /**
+   * Refined predicate which clamps a number to the range [0, 1]
+   */
+  type Alpha = GreaterEqual[W.`0f`.T] And LessEqual[W.`1f`.T]
 
   /**
    * Refined predicate which clamps a number to the range [0, 255]
@@ -363,161 +357,144 @@ object Color {
   type RRGGBBAA = MatchesRegex[W.`"^#([a-fA-F0-9]{6}|[a-fA-F0-9]{8})$"`.T]
 
   /**
-   * Constructs a new [[Color]] with 0 as its default RGBA values.
+   * Creates an immutable [[Color]] using the given RGBA values.
    */
-  def apply(): Color = Color(0f, 0f, 0f, 0f)
+  def apply(
+      r: Float Refined RGBA = 0f,
+      g: Float Refined RGBA = 0f,
+      b: Float Refined RGBA = 0f,
+      a: Float Refined RGBA = 0f
+  ): Color[ImmutableColor] = ImmutableColor(r, g, b, a)
 
   /**
-   * @see [[fromRgba8888]]
+   * Destructure the [[Color]] for pattern-matching.
    */
-  def apply(rgba8888: Int): Color = Color.fromRgba8888(rgba8888)
+  def unapply(color: Color[_]): Option[(Float, Float, Float, Float)] = Some((color.r, color.g, color.b, color.a))
 
   /**
-   * Packs the color components into a 32-bit integer with the format ABGR and then converts it to a float.
+   * Creates an immutable [[Color]] using the given hex string with the RRGGBBAA format.
    */
-  def toFloatBits(
-      r: Float Refined RGBA,
-      g: Float Refined RGBA,
-      b: Float Refined RGBA,
-      a: Float Refined RGBA
-  ): Float = JColor.toFloatBits(r, g, b, a)
+  def fromHex(value: String Refined RRGGBBAA): Color[ImmutableColor] = ImmutableColor.fromHex(value)
 
   /**
-   * Packs the color components into a 32-bit integer with the format ABGR and then converts it to a float.
-   * The required parameters must be in the range of [0, 255].
+   * Packs the RGBA values into a 32-bit integer with the format ABGR.<br>
+   * Values must be in the range of [0, 255].
    */
-  def toFloatBits(
-      r: Int Refined ABGR,
-      g: Int Refined ABGR,
-      b: Int Refined ABGR,
-      a: Int Refined ABGR
-  ): Float = JColor.toFloatBits(r, g, b, a)
+  def toIntBits(r: Int Refined ABGR, g: Int Refined ABGR, b: Int Refined ABGR, a: Int Refined ABGR): Int =
+    (a << 24) | (b << 16) | (g << 8) | r
 
   /**
-   * Packs the color components into a 32-bit integer with the format ABGR.
+   * Packs the RGBA values into a 32-bit integer with the format ABGR, then coverts it back to a float.<br>
+   * Values must be in the range of [0, 255].<br>
+   * Note: Converting to a float and back can be lossy for its alpha value.
    */
-  def toIntBits(
-      r: Int Refined ABGR,
-      g: Int Refined ABGR,
-      b: Int Refined ABGR,
-      a: Int Refined ABGR
-  ): Int = JColor.toIntBits(r, g, b, a)
-
-  def alpha(value: Float): Int = JColor.alpha(value)
-
-  def luminanceAlpha(luminance: Float, alpha: Float): Int = JColor.luminanceAlpha(luminance, alpha)
-
-  def rgb565(r: Float, g: Float, b: Float): Int = JColor.rgb565(r, g, b)
-
-  def rgba4444(r: Float, g: Float, b: Float, a: Float): Int = JColor.rgba4444(r, g, b, a)
-
-  def rgb888(r: Float, g: Float, b: Float): Int = JColor.rgb888(r, g, b)
-
-  def rgba8888(r: Float, g: Float, b: Float, a: Float): Int = JColor.rgba8888(r, g, b, a)
-
-  def argb8888(a: Float, r: Float, g: Float, b: Float): Int = JColor.argb8888(a, r, g, b)
+  def toFloatBits(r: Int Refined ABGR, g: Int Refined ABGR, b: Int Refined ABGR, a: Int Refined ABGR): Float =
+    NumberUtils.intToFloatColor(
+      toIntBits(
+        Refined.unsafeApply(r.toInt),
+        Refined.unsafeApply(g.toInt),
+        Refined.unsafeApply(b.toInt),
+        Refined.unsafeApply(a.toInt)
+      )
+    )
 
   /**
-   * Creates a new color using the given rgb565 value.
+   * Packs the RGBA values into a 32-bit integer with the format ABGR, then coverts it back to a float.<br>
+   * Values must be in the range of [0, 1].<br>
+   * Note: Converting to a float and back can be lossy for its alpha value.
    */
-  def fromRgb565(value: Int): Color = {
-    val color = new JColor()
-    JColor.rgb565ToColor(color, value)
-    color.asScala
-  }
+  def toFloatBits(r: Float Refined RGBA, g: Float Refined RGBA, b: Float Refined RGBA, a: Float Refined RGBA): Float =
+    NumberUtils.intToFloatColor(
+      toIntBits(
+        Refined.unsafeApply((r * 255f).toInt),
+        Refined.unsafeApply((g * 255f).toInt),
+        Refined.unsafeApply((b * 255f).toInt),
+        Refined.unsafeApply((a * 255f).toInt)
+      )
+    )
 
   /**
-   * Creates a new color using the given rgba4444 value.
+   * Packs the alpha value into a 32-bit integer. The alpha value must be in the range of [0, 1].
    */
-  def fromRgba4444(value: Int): Color = {
-    val color = new JColor()
-    JColor.rgba4444ToColor(color, value)
-    color.asScala
-  }
+  def alpha(value: Float Refined Alpha): Int = (value * 255f).toInt
+
+  private def pack(value: Float, multiplier: Float, shiftBits: Int): Int = (value * multiplier).toInt << shiftBits
 
   /**
-   * Creates a new color using the given rgb888 value.
+   * Packs a luminance and alpha value into a 32-bit. The values must be in the range of [0, 1].
    */
-  def fromRgb888(value: Int): Color = {
-    val color = new JColor()
-    JColor.rgb888ToColor(color, value)
-    color.asScala
-  }
+  def luminanceAlpha(luminance: Float Refined Alpha, alpha: Float Refined Alpha): Int =
+    pack(luminance, 255f, 8) | (alpha * 255f).toInt
 
   /**
-   * Creates a new color using the given rgba8888value.
+   * Packs the RGB values into a 32-bit integer with the format RGB565.
    */
-  def fromRgba8888(value: Int): Color = {
-    val color = new JColor()
-    JColor.rgba8888ToColor(color, value)
-    color.asScala
-  }
+  def toRgb565(r: Float, g: Float, b: Float): Int = pack(r, 31f, 11) | pack(g, 63f, 5) | (b * 31f).toInt
 
   /**
-   * Creates a new color using the given argb8888 value.
+   * Packs the RGBA values into a 32-bit integer with the format RGB4444.
    */
-  def fromArgb8888(value: Int): Color = {
-    val color = new JColor()
-    JColor.argb8888ToColor(color, value)
-    color.asScala
-  }
+  def toRgba4444(r: Float, g: Float, b: Float, a: Float): Int =
+    pack(r, 15f, 12) | pack(g, 15f, 8) | pack(b, 15f, 4) | (a * 15f).toInt
 
   /**
-   * Creates a new color using the given abgr8888 value.
+   * Packs the RGB values into a 32-bit integer with the format RGB888.<br>
+   * Values must be in the range of [0, 1].
    */
-  def fromAbgr8888(value: Float): Color = {
-    val color = new JColor()
-    JColor.abgr8888ToColor(color, value)
-    color.asScala
-  }
+  def toRgb888(r: Float Refined RGBA, g: Float Refined RGBA, b: Float Refined RGBA): Int =
+    pack(r, 255f, 16) | pack(g, 255f, 8) | (b * 255f).toInt
 
   /**
-   * Creates a new color using the given Hue-Saturation-Value.
-   * The hsv values are not refined to preserve high range color.
-   *
-   * @param h Hue in range [0, 360]
-   * @param s Saturation in range [0, 1]
-   * @param v Brightness in range [0, 1]
+   * Packs the RGBA values into a 32-bit integer with the format RGBA8888.<br>
+   * Values must be in the range of [0, 1].
    */
-  def fromHsv(h: Float, s: Float, v: Float): Color = new JColor().fromHsv(h, s, v).asScala
+  def toRgba8888(r: Float Refined RGBA, g: Float Refined RGBA, b: Float Refined RGBA, a: Float Refined RGBA): Int =
+    pack(r, 255f, 24) | pack(g, 255f, 16) | pack(b, 255f, 8) | (a * 255f).toInt
 
   /**
-   * Creates a new color using the given hex string with the RRGGBBAA format.
+   * Packs the ARGB values into a 32-bit integer with the format ARGB8888.<br>
+   * Values must be in the range of [0, 1].
    */
-  def fromHex(value: String Refined RRGGBBAA): Color = JColor.valueOf(value).asScala
+  def toArgb8888(a: Float Refined RGBA, r: Float Refined RGBA, g: Float Refined RGBA, b: Float Refined RGBA): Int =
+    pack(a, 255f, 24) | pack(r, 255f, 16) | pack(g, 255f, 8) | (b * 255f).toInt
 
-  lazy val White: Color = Color(1f, 1f, 1f, 1f)
-  lazy val LightGray: Color = Color(0xbfbfbfff)
-  lazy val Gray: Color = Color(0x7f7f7fff)
-  lazy val DarkGray: Color = Color(0x3f3f3fff)
-  lazy val Black: Color = Color(0f, 0f, 0f, 1f)
-  lazy val Clear: Color = Color(0f, 0f, 0f, 0f)
-  lazy val Blue: Color = Color(0f, 0f, 1f, 1f)
-  lazy val Navy: Color = Color(0f, 0f, 0.5f, 1f)
-  lazy val Royal: Color = Color(0x4169e1ff)
-  lazy val Slate: Color = Color(0x708090ff)
-  lazy val Sky: Color = Color(0x87ceebff)
-  lazy val Cyan: Color = Color(0f, 1f, 1f, 1f)
-  lazy val Teal: Color = Color(0f, 0.5f, 0.5f, 1f)
-  lazy val Green: Color = Color(0x00ff00ff)
-  lazy val Chartreuse: Color = Color(0x7fff00ff)
-  lazy val Lime: Color = Color(0x32cd32ff)
-  lazy val Forest: Color = Color(0x228b22ff)
-  lazy val Olive: Color = Color(0x6b8e23ff)
-  lazy val Yellow: Color = Color(0xffff00ff)
-  lazy val Gold: Color = Color(0xffd700ff)
-  lazy val Goldenrod: Color = Color(0xdaa520ff)
-  lazy val Orange: Color = Color(0xffa500ff)
-  lazy val Brown: Color = Color(0x8b4513ff)
-  lazy val Tan: Color = Color(0xd2b48cff)
-  lazy val Firebrick: Color = Color(0xb22222ff)
-  lazy val Red: Color = Color(0xff0000ff)
-  lazy val Scarlet: Color = Color(0xff341cff)
-  lazy val Coral: Color = Color(0xff7f50ff)
-  lazy val Salmon: Color = Color(0xfa8072ff)
-  lazy val Pink: Color = Color(0xff69b4ff)
-  lazy val Magenta: Color = Color(1f, 0f, 1f, 1f)
-  lazy val Purple: Color = Color(0xa020f0ff)
-  lazy val Violet: Color = Color(0xee82eeff)
-  lazy val Maroon: Color = Color(0xb03060ff)
+  /**
+   * Creates an immutable [[Color]] using the given integer with the format RGB565.
+   */
+  def fromRgb565(value: Int): Color[ImmutableColor] = ImmutableColor.fromRgb565(value)
+
+  /**
+   * Creates an immutable [[Color]] using the given integer with the format RGBA4444.
+   */
+  def fromRgba4444(value: Int): Color[ImmutableColor] = ImmutableColor.fromRgba4444(value)
+
+  /**
+   * Creates an immutable [[Color]] using the given integer with the format RGB888.
+   */
+  def fromRgb888(value: Int): Color[ImmutableColor] = ImmutableColor.fromRgb888(value)
+
+  /**
+   * Creates an immutable [[Color]] using the given integer with the format RGBA8888.
+   */
+  def fromRgba8888(value: Int): Color[ImmutableColor] = ImmutableColor.fromRgba8888(value)
+
+  /**
+   * Creates an immutable [[Color]] using the given integer with the format ARGB8888.
+   */
+  def fromArgb8888(value: Int): Color[ImmutableColor] = ImmutableColor.fromArgb8888(value)
+
+  /**
+   * Creates an immutable [[Color]] using the given value with the format ABGR8888.
+   */
+  def fromAbgr8888(value: Float): Color[ImmutableColor] = ImmutableColor.fromAbgr8888(value)
+
+  /**
+   * Creates an immutable [[Color]] using the given Hue-Saturation-Value.
+   */
+  def fromHsv(h: Float, s: Float, v: Float): Color[ImmutableColor] = ImmutableColor.fromHsv(h, s, v)
+
+  /**
+   * Creates an immutable [[Color]] using the given Hue-Saturation-Value.
+   */
+  def fromHsv(value: Hsv): Color[ImmutableColor] = ImmutableColor.fromHsv(value)
 }
