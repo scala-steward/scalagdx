@@ -1,6 +1,6 @@
 object Version {
   
-  val gdx = "1.9.14"
+  val gdx = "1.10.0"
 
   // Typelevel ecosystem
   val cats = "2.0.0"
