@@ -23,42 +23,22 @@
  */
 package sdx
 
+import cats.effect.kernel.Sync
+
 /**
- * The ApplicationListener follows the standard Android activity life-cycle and is emulated on the desktop accordingly.
+ * Convenience implementation of [[ApplicationListener]], providing a default for each method.
  */
-trait ApplicationListener[F[_]] extends Disposable[F] {
+abstract class ApplicationAdapter[F[_]: Sync] extends ApplicationListener[F] {
 
-  /**
-   * Called when the [[Application]] is created.
-   */
-  def create: F[Unit]
+  override val create: F[Unit] = Sync[F].unit
 
-  /**
-   * Called when the [[Application]] should render itself.
-   */
-  def render: F[Unit]
+  override val render: F[Unit] = Sync[F].unit
 
-  /**
-   * Called when the [[Application]] is resized. This will only be called during a non-paused state.
-   *
-   * First argument: The window's width in pixels.
-   * Second argument: The window's height in pixels.
-   */
-  def resize: Int => Int => F[Unit]
+  override val resize: Int => Int => F[Unit] = _ => _ => Sync[F].unit
 
-  /**
-   * Called when the [[Application]] is paused, usually when it's not active or visible on-screen.<br>
-   * An [[Application]] is also paused before it is disposed.
-   */
-  def pause: F[Unit]
+  override val pause: F[Unit] = Sync[F].unit
 
-  /**
-   * Called when the [[Application]] is resumed from a paused state, usually when it regains focus.
-   */
-  def resume: F[Unit]
+  override val resume: F[Unit] = Sync[F].unit
 
-  /**
-   * Called when the [[Application]] is destroyed.
-   */
-  override def dispose: F[Unit]
+  override val dispose: F[Unit] = Sync[F].unit
 }
