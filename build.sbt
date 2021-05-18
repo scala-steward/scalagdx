@@ -17,6 +17,7 @@ lazy val commonSettings: Seq[SettingsDefinition] = Seq(
     catsCore,
     catsEffectCore,
     catsEffectKernel,
+    gdxCore,
     weaverCats % Test,
     weaverCatsCheck % Test,
   ),
@@ -47,5 +48,5 @@ lazy val core = (project in file("modules/core"))
   .settings(commonSettings: _*)
   .settings(
     name := "sdx-core",
-    libraryDependencies += gdxCore,
+    libraryDependencies += fs2,
   )

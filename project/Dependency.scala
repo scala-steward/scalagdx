@@ -16,6 +16,8 @@ object Dependency {
   private val gdx = dependency("com.badlogicgames.gdx")(Version.libGDX)(false) _
   val gdxCore = gdx("gdx")
 
+  val fs2 = "co.fs2" %% "fs2-core" % Version.fs2
+
   // Compiler plugins
   val kindProjector = typeLevel(Version.kindProjector)(false)("kind-projector")
   val betterMonadicFor = "com.olegpy" %% "better-monadic-for" % Version.betterMonadicFor
