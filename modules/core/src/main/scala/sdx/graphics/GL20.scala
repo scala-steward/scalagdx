@@ -30,7 +30,6 @@ import java.nio.IntBuffer
 /**
  * Wrapper for all the methods of OpenGL ES 2.0
  */
-@SuppressWarnings(Array("org.wartremover.warts.Overloading"))
 trait GL20[F[_]] {
   def glActiveTexture(texture: Int): F[Unit]
 
@@ -358,7 +357,7 @@ trait GL20[F[_]] {
 
   def glUniform4fv(location: Int, count: Int, v: FloatBuffer): F[Unit]
 
-  def glUniform4fv(location: Int, count: Int, v: Array[Int], offset: Int): F[Unit]
+  def glUniform4fv(location: Int, count: Int, v: Array[Float], offset: Int): F[Unit]
 
   def glUniform4i(location: Int, x: Int, y: Int, z: Int, w: Int): F[Unit]
 

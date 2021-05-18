@@ -30,6 +30,7 @@ lazy val commonSettings: Seq[SettingsDefinition] = Seq(
     Wart.JavaSerializable,
     Wart.Product,
     Wart.PlatformDefault,
+    Wart.Overloading,
   ),
   semanticdbEnabled := true,
   semanticdbVersion := scalafixSemanticdb.revision,
