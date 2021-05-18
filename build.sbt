@@ -1,12 +1,10 @@
 import Dependency._
 
-val TestScope = "it,test"
-
 ThisBuild / scalacOptions ++= Seq(
   "-Ymacro-annotations",
   "-Ywarn-macros:after",
   "-P:semanticdb:synthetics:on",
-  "-target:jvm-1.7",
+  "-target:jvm-1.8",
 )
 
 lazy val commonSettings: Seq[SettingsDefinition] = Seq(
@@ -15,10 +13,12 @@ lazy val commonSettings: Seq[SettingsDefinition] = Seq(
   crossScalaVersions := Seq("2.13.5", "2.12.13"),
   libraryDependencies ++= Seq(
     compilerPlugin(kindProjector cross CrossVersion.full),
+    compilerPlugin(betterMonadicFor),
     catsCore,
-    catsEffect,
-    weaverCats % TestScope,
-    weaverCatsCheck % TestScope,
+    catsEffectCore,
+    catsEffectKernel,
+    weaverCats % Test,
+    weaverCatsCheck % Test,
   ),
   testFrameworks += new TestFramework("weaver.framework.CatsEffect"),
   wartremoverErrors ++= Warts.allBut(
@@ -40,4 +40,11 @@ lazy val root = (project in file("."))
   .settings(
     Compile / unmanagedSourceDirectories := Nil,
     Test / unmanagedSourceDirectories := Nil,
+  ).aggregate(core)
+
+lazy val core = (project in file("modules/core"))
+  .settings(commonSettings: _*)
+  .settings(
+    name := "sdx-core",
+    libraryDependencies += gdxCore,
   )

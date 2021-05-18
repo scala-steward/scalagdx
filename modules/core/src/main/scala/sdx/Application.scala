@@ -1,0 +1,3 @@
+package sdx
+
+trait Application
