@@ -48,12 +48,12 @@ trait Graphics[F[_]] {
   /**
    * The [[sdx.graphics.GL20]] instance.
    */
-  def gl20: GL20[F]
+  def getGL20: GL20[F]
 
   /**
    * The [[sdx.graphics.GL30]] instance, if it exists.
    */
-  def gl30: Option[GL30[F]]
+  def getGL30: Option[GL30[F]]
 
   /**
    * Sets the [[sdx.graphics.GL20]] instance.
@@ -72,47 +72,47 @@ trait Graphics[F[_]] {
   /**
    * The width of the client area in logical pixels.
    */
-  def width: F[Int]
+  def getWidth: F[Int]
 
   /**
    * The height of the client area in logical pixels.
    */
-  def height: F[Int]
+  def getHeight: F[Int]
 
   /**
    * The width of the framebuffer in physical pixels.
    */
-  def backBufferWidth: F[Int]
+  def getBackBufferWidth: F[Int]
 
   /**
    * The height of the framebuffer in physical pixels.
    */
-  def backBufferHeight: F[Int]
+  def getBackBufferHeight: F[Int]
 
   /**
    * The amount of pixels per logical pixel (point).
    */
-  def backBufferScale: F[Float]
+  def getBackBufferScale: F[Float]
 
   /**
    * The inset from the left which avoids cutouts in logical pixels.
    */
-  def safeInsetLeft: F[Int]
+  def getSafeInsetLeft: F[Int]
 
   /**
    * The inset from the top which avoids cutouts in logical pixels.
    */
-  def safeInsetTop: F[Int]
+  def getSafeInsetTop: F[Int]
 
   /**
    * The inset from the bottom which avoids cutouts in logical pixels.
    */
-  def safeInsetBottom: F[Int]
+  def getSafeInsetBottom: F[Int]
 
   /**
    * The inset from the right which avoids cutouts in logical pixels.
    */
-  def safeInsetRight: F[Int]
+  def getSafeInsetRight: F[Int]
 
   /**
    * The id of the current frame. The general contract of this method is that the id is incremented
@@ -123,49 +123,49 @@ trait Graphics[F[_]] {
    *
    * @return The id of the current frame.
    */
-  def frameId: F[Long]
+  def getFrameId: F[Long]
 
   /**
    * The time span between the current and previous frame in seconds.
    */
-  def deltaTime: F[Float]
+  def getDeltaTime: F[Float]
 
   /**
    * The average number of frames per second.
    */
-  def framesPerSecond: F[Int]
+  def getFramesPerSecond: F[Int]
 
   /**
    * The graphics type of this instance.
    */
-  def graphicsType: GraphicsType
+  def getType: GraphicsType
 
   /**
    * The gl version of this instance.
    */
-  def glVersion: GLVersion
+  def getGLVersion: GLVersion
 
   /**
    * The pixels per inch on the x-axis.
    */
-  def ppix: F[Float]
+  def getPpiX: F[Float]
 
   /**
    * The pixels per inch on the y-axis.
    */
-  def ppiy: F[Float]
+  def getPpiY: F[Float]
 
   /**
    * The pixels per centimeter on the x-axis.
    */
-  def ppcx: F[Float]
+  def getPpcX: F[Float]
 
   /**
    * The pixels per centimeter on the y-axis.
    *
    * @return
    */
-  def ppyx: F[Float]
+  def getPpcY: F[Float]
 
   /**
    * This is a scaling factor for the Density Independent Pixel unit, following the same conventions as
@@ -174,7 +174,7 @@ trait Graphics[F[_]] {
    *
    * @return The density independent pixel factor of the display.
    */
-  def density: F[Float]
+  def getDensity: F[Float]
 
   /**
    * True if display mode changes are supported, false otherwise.
@@ -184,24 +184,24 @@ trait Graphics[F[_]] {
   /**
    * The primary monitor.
    */
-  def primaryMonitor: F[Monitor]
+  def getPrimaryMonitor: F[Monitor]
 
   /**
    * The monitor the application's window is currently on.
    */
-  def monitor: F[Monitor]
+  def getMonitor: F[Monitor]
 
   /**
    * The currently connected monitors.
    */
-  def monitors: Stream[F, Monitor]
+  def getMonitors: Stream[F, Monitor]
 
   /**
    * The supported fullscreen displaymodes of the current monitor.
    *
    * @return A stream of the supported displaymodes.
    */
-  def displayModes: Stream[F, DisplayMode]
+  def getDisplayModes: Stream[F, DisplayMode]
 
   /**
    * The supported fullscreen displaymodes of the given monitor.
@@ -209,7 +209,7 @@ trait Graphics[F[_]] {
    * @param monitor The monitor to check for displaymodes.
    * @return A stream of the supported displaymodes.
    */
-  def displayModes(monitor: Monitor): Stream[F, DisplayMode]
+  def getDisplayModes(monitor: Monitor): Stream[F, DisplayMode]
 
   /**
    * Sets the window to full-screen mode.
@@ -267,7 +267,7 @@ trait Graphics[F[_]] {
   /**
    * The format of the color, depth, and stencil buffer in a buffer format instance.
    */
-  def bufferFormat: BufferFormat
+  def getBufferFormat: BufferFormat
 
   /**
    * Checks if an extension is supported.
