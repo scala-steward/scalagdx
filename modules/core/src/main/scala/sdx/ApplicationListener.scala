@@ -27,7 +27,6 @@ package sdx
  * The ApplicationListener follows the standard Android activity life-cycle and is emulated on the desktop accordingly.
  */
 trait ApplicationListener[F[_]] extends Disposable[F] {
-
   /**
    * Called when the [[Application]] is created.
    */

@@ -27,7 +27,6 @@ package sdx
  * Represents a resource that needs to be disposed after use.
  */
 trait Disposable[F[_]] {
-
   /**
    * Releases all resources of this object.
    */

@@ -29,7 +29,6 @@ import cats.effect.kernel.Sync
  * Convenience implementation of [[ApplicationListener]], providing a default for each method.
  */
 abstract class ApplicationAdapter[F[_]: Sync] extends ApplicationListener[F] {
-
   override val create: F[Unit] = Sync[F].unit
 
   override val render: F[Unit] = Sync[F].unit
