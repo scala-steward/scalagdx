@@ -38,6 +38,7 @@ import sdx.graphics.GL30
  * Encapsualtes communication with the graphics processor.
  */
 trait Graphics[F[_]] {
+
   /**
    * Checks if GL30 is available.
    *

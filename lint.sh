@@ -1,0 +1,1 @@
+sbt scalafixAll scalafmtAll

@@ -1,5 +1,6 @@
 import Dependency._
 
+ThisBuild / scalafixDependencies += organizeImports
 ThisBuild / scalacOptions ++= Seq(
   "-Ymacro-annotations",
   "-Ywarn-macros:after",
@@ -15,8 +16,6 @@ lazy val commonSettings: Seq[SettingsDefinition] = Seq(
     compilerPlugin(kindProjector cross CrossVersion.full),
     compilerPlugin(betterMonadicFor),
     catsCore,
-    catsEffectCore,
-    catsEffectKernel,
     gdxCore,
     weaverCats % Test,
     weaverCatsCheck % Test,
@@ -38,7 +37,6 @@ lazy val commonSettings: Seq[SettingsDefinition] = Seq(
 )
 
 lazy val root = (project in file("."))
-  .settings(commonSettings: _*)
   .settings(
     Compile / unmanagedSourceDirectories := Nil,
     Test / unmanagedSourceDirectories := Nil,
@@ -48,5 +46,8 @@ lazy val core = (project in file("modules/core"))
   .settings(commonSettings: _*)
   .settings(
     name := "sdx-core",
-    libraryDependencies += fs2,
+    libraryDependencies ++= Seq(
+      fs2,
+      catsEffectKernel,
+    )
   )

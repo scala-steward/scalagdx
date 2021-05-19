@@ -7,4 +7,5 @@ object Version {
   val weaver = "0.7.3"
   val libGDX = "1.10.0"
   val fs2 = "3.0.3"
+  val organizeImports = "0.5.0"
 }

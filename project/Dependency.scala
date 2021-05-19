@@ -17,6 +17,7 @@ object Dependency {
   val gdxCore = gdx("gdx")
 
   val fs2 = "co.fs2" %% "fs2-core" % Version.fs2
+  val organizeImports = "com.github.liancheng" %% "organize-imports" % Version.organizeImports
 
   // Compiler plugins
   val kindProjector = typeLevel(Version.kindProjector)(false)("kind-projector")
