@@ -31,6 +31,9 @@ lazy val commonSettings: Seq[SettingsDefinition] = Seq(
     Wart.Product,
     Wart.PlatformDefault,
     Wart.Overloading,
+    Wart.StringPlusAny,
+    Wart.Var,
+    Wart.Equals,
   ),
   semanticdbEnabled := true,
   semanticdbVersion := scalafixSemanticdb.revision,
@@ -40,7 +43,11 @@ lazy val root = (project in file("."))
   .settings(
     Compile / unmanagedSourceDirectories := Nil,
     Test / unmanagedSourceDirectories := Nil,
-  ).aggregate(core)
+  )
+  .aggregate(
+    core,
+    backendLwjgl,
+  )
 
 lazy val core = (project in file("modules/core"))
   .settings(commonSettings: _*)
@@ -49,5 +56,19 @@ lazy val core = (project in file("modules/core"))
     libraryDependencies ++= Seq(
       fs2,
       catsEffectKernel,
-    )
+    ),
+  )
+
+lazy val backendLwjgl = (project in file("modules/backend-lwjgl"))
+  .dependsOn(core)
+  .settings(commonSettings: _*)
+  .settings(
+    name := "sdx-backend-lwjgl",
+    libraryDependencies ++= Seq(
+      fs2,
+      catsKernel,
+      catsEffectKernel,
+      lwjgl2,
+      gdxBackendLwjgl,
+    ),
   )

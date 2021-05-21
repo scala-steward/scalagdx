@@ -8,4 +8,5 @@ object Version {
   val libGDX = "1.10.0"
   val fs2 = "3.0.3"
   val organizeImports = "0.5.0"
+  val lwjgl2 = "2.9.3"
 }

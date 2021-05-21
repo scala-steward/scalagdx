@@ -6,7 +6,10 @@ object Dependency {
     (if (useScalaVersion) group %% _ else group % _)(artifact) % version
 
   private val typeLevel = dependency("org.typelevel") _
-  val catsCore = typeLevel(Version.catsCore)(true)("cats-core")
+
+  private val cats = typeLevel(Version.catsCore)(true)
+  val catsCore = cats("cats-core")
+  val catsKernel = cats("cats-kernel")
 
   private val catsEffect = typeLevel(Version.catsEffect)(true)
   val catsEffectCore = catsEffect("cats-effect")
@@ -15,7 +18,9 @@ object Dependency {
 
   private val gdx = dependency("com.badlogicgames.gdx")(Version.libGDX)(false) _
   val gdxCore = gdx("gdx")
+  val gdxBackendLwjgl = gdx("gdx-backend-lwjgl")
 
+  val lwjgl2 = "org.lwjgl.lwjgl" % "lwjgl" % Version.lwjgl2
   val fs2 = "co.fs2" %% "fs2-core" % Version.fs2
   val organizeImports = "com.github.liancheng" %% "organize-imports" % Version.organizeImports
 

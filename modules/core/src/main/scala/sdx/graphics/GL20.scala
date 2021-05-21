@@ -31,6 +31,7 @@ import java.nio.IntBuffer
  * Wrapper for all the methods of OpenGL ES 2.0
  */
 trait GL20[F[_]] {
+
   def glActiveTexture(texture: Int): F[Unit]
 
   def glBindTexture(target: Int, texture: Int): F[Unit]
@@ -403,6 +404,7 @@ trait GL20[F[_]] {
 }
 
 object GL20 {
+
   val GL_ES_VERSION_2_0: Int = 1;
   val GL_DEPTH_BUFFER_BIT: Int = 0x00000100;
   val GL_STENCIL_BUFFER_BIT: Int = 0x00000400;

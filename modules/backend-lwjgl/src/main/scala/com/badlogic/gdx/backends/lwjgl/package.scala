@@ -21,24 +21,15 @@
  *
  * This product includes software developed at libGDX (https://libgdx.com/).
  */
-package sdx
+package com.badlogic.gdx.backends
 
-import cats.effect.kernel.Sync
+import org.lwjgl.input.Cursor
 
-/**
- * Convenience implementation of [[ApplicationListener]], providing a default for each method.
- */
-abstract class ApplicationAdapter[F[_]: Sync] extends ApplicationListener[F] {
+package object lwjgl {
 
-  override val create: F[Unit] = Sync[F].unit
+  implicit class LwjglCursorOps(private val instance: LwjglCursor) extends AnyVal {
 
-  override val render: F[Unit] = Sync[F].unit
-
-  override val resize: Int => Int => F[Unit] = _ => _ => Sync[F].unit
-
-  override val pause: F[Unit] = Sync[F].unit
-
-  override val resume: F[Unit] = Sync[F].unit
-
-  override val dispose: F[Unit] = Sync[F].unit
+    // Workaround to LwjglCursor#lwjglCursor being package private
+    def lwjglCursor: Cursor = instance.lwjglCursor
+  }
 }

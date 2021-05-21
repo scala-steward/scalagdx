@@ -21,24 +21,8 @@
  *
  * This product includes software developed at libGDX (https://libgdx.com/).
  */
-package sdx
+package sdx.lwjgl
 
-import cats.effect.kernel.Sync
+import com.badlogic.gdx.Graphics.Monitor
 
-/**
- * Convenience implementation of [[ApplicationListener]], providing a default for each method.
- */
-abstract class ApplicationAdapter[F[_]: Sync] extends ApplicationListener[F] {
-
-  override val create: F[Unit] = Sync[F].unit
-
-  override val render: F[Unit] = Sync[F].unit
-
-  override val resize: Int => Int => F[Unit] = _ => _ => Sync[F].unit
-
-  override val pause: F[Unit] = Sync[F].unit
-
-  override val resume: F[Unit] = Sync[F].unit
-
-  override val dispose: F[Unit] = Sync[F].unit
-}
+final class LwjglMonitor(virtualX: Int, virtualY: Int, name: String) extends Monitor(virtualX, virtualY, name)

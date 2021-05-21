@@ -47,14 +47,14 @@ trait Graphics[F[_]] {
   def isGL30Available: F[Boolean]
 
   /**
-   * The [[sdx.graphics.GL20]] instance.
+   * The [[sdx.graphics.GL20]] instance, if it exists.
    */
-  def getGL20: GL20[F]
+  def getGL20: F[Option[GL20[F]]]
 
   /**
    * The [[sdx.graphics.GL30]] instance, if it exists.
    */
-  def getGL30: Option[GL30[F]]
+  def getGL30: F[Option[GL30[F]]]
 
   /**
    * Sets the [[sdx.graphics.GL20]] instance.
@@ -180,7 +180,7 @@ trait Graphics[F[_]] {
   /**
    * True if display mode changes are supported, false otherwise.
    */
-  def supportsDisplayModeChange: F[Boolean]
+  def supportsDisplayModeChange: Boolean
 
   /**
    * The primary monitor.
@@ -198,19 +198,34 @@ trait Graphics[F[_]] {
   def getMonitors: Stream[F, Monitor]
 
   /**
-   * The supported fullscreen displaymodes of the current monitor.
+   * The supported fullscreen display modes of the current monitor.
    *
-   * @return A stream of the supported displaymodes.
+   * @return A stream of the supported display modes.
    */
   def getDisplayModes: Stream[F, DisplayMode]
 
   /**
-   * The supported fullscreen displaymodes of the given monitor.
+   * The supported fullscreen display modes of the given monitor.
    *
-   * @param monitor The monitor to check for displaymodes.
-   * @return A stream of the supported displaymodes.
+   * @param monitor The monitor to check for display modes.
+   * @return A stream of the supported displaym odes.
    */
   def getDisplayModes(monitor: Monitor): Stream[F, DisplayMode]
+
+  /**
+   * The current display mode of the monitor the window is on.
+   *
+   * @return The display mode.
+   */
+  def getDisplayMode: F[DisplayMode]
+
+  /**
+   * The current display mode of the given monitor.
+   *
+   * @param monitor The given monitor.
+   * @return The display mode.
+   */
+  def getDisplayMode(monitor: Monitor): F[DisplayMode]
 
   /**
    * Sets the window to full-screen mode.
@@ -306,9 +321,9 @@ trait Graphics[F[_]] {
    * @param pixmap The pixmap in a RGBA8888 format
    * @param xHotspot The x location of the hotspot pixel within the cursor image (origin top-left corner)
    * @param yHotspot The y location of the hotspot pixel within the cursor image (origin top-left corner)
-   * @return A cursor object that can be used by calling [[setCursor]], or None if not supported.
+   * @return A cursor object that can be used by calling [[setCursor]]
    */
-  def newCursor(pixmap: Pixmap, xHotspot: Int, yHotspot: Int): F[Option[Cursor]]
+  def newCursor(pixmap: Pixmap, xHotspot: Int, yHotspot: Int): Cursor
 
   /**
    * Only available on the lwjgl-backend and on the gwt-backend.

@@ -30,6 +30,7 @@ import java.nio.IntBuffer
  * Wrapper for all the methods of OpenGL ES 2.0
  */
 trait GL30[F[_]] extends GL20[F] {
+
   val GL_READ_BUFFER: Int = 0x0c02
   val GL_UNPACK_ROW_LENGTH: Int = 0x0cf2
   val GL_UNPACK_SKIP_ROWS: Int = 0x0cf3
