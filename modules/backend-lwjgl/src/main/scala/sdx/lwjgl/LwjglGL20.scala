@@ -31,7 +31,7 @@ import java.nio.Buffer
 import java.nio.FloatBuffer
 import java.nio.IntBuffer
 
-final class LwjglGL20[F[_]: Sync](gl: GdxGL20) extends GL20[F] {
+class LwjglGL20[F[_]: Sync](gl: GdxGL20) extends GL20[F] {
 
   override def glActiveTexture(texture: Int): F[Unit] = Sync[F].delay(gl.glActiveTexture(texture))
 
