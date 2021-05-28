@@ -11,7 +11,7 @@ ThisBuild / scalacOptions ++= Seq(
 lazy val commonSettings: Seq[SettingsDefinition] = Seq(
   organization := "com.github.scalagdx",
   scalaVersion := "2.13.6",
-  crossScalaVersions := Seq("2.13.6", "2.12.13"),
+  crossScalaVersions := Seq("2.13.6", "2.12.14"),
   libraryDependencies ++= Seq(
     compilerPlugin(kindProjector cross CrossVersion.full),
     compilerPlugin(betterMonadicFor),
