@@ -10,3 +10,7 @@
 
 ScalaGDX is a simple wrapper for LibGDX, providing utilities that make working with LibGDX in Scala more pleasant.  
 SDX is designed to be modular. All modules within this library are optional. (Work in progress)
+
+# Disclaimer
+
+This project is no longer in development. Perhaps it'll be picked up in the future but for now this repository will be read-only.
